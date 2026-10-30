@@ -13,3 +13,7 @@
 - One topic per file. Add the file to `docs/README.md`.
 - Update docs when a change is worth knowing about.
 - Do not load docs into context unless needed.
+
+## Handoffs
+
+Unfinished tasks get a handoff in `docs/handoffs/`, removed once the task is done. See `handoffs/README.md`.

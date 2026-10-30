@@ -9,5 +9,6 @@ Open only the file you need.
 | [art-direction.md](art-direction.md) | Doing any UI, styling or design work |
 | [conventions.md](conventions.md) | Unsure about git workflow or documentation rules |
 | [deployment.md](deployment.md) | Touching build, hosting or Cloudflare Pages |
+| [handoffs/README.md](handoffs/README.md) | Starting or ending a session on an unfinished task (lists active handoffs in that folder) |
 
 `inspiration/` holds reference images for the design (see `art-direction.md`).

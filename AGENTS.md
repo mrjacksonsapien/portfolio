@@ -27,6 +27,12 @@ Static portfolio built with Astro (islands architecture), hosted on Cloudflare P
 - Keep documentation split into small, focused files so each can be read on its own.
 - Update the documentation when a change would be useful to know about (new convention, new island, deployment change, etc.).
 
+## Handoffs
+
+- At the start of a session, check `docs/handoffs/` for an unfinished task related to your work.
+- If a task is not completely done when the session ends, write or update a handoff in `docs/handoffs/` so a new session can continue it. Delete the handoff only when the task is done.
+- Format and lifecycle: `docs/handoffs/README.md`.
+
 ## Code conventions
 
 - Static by default: use `.astro` components in `src/components/`. Add JavaScript only through an island in `src/islands/`, and always choose the lightest hydration directive (`client:visible` > `client:idle` > `client:load`). See `docs/architecture.md`.
