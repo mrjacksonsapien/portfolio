@@ -1,0 +1,25 @@
+---
+interface Props {
+  label: string;
+  title: string;
+}
+
+const { label, title } = Astro.props;
+---
+
+<header class="section-heading">
+  <span class="meta">{label}</span>
+  <h2 class="display accent">{title}</h2>
+</header>
+
+<style>
+  .section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+  }
+  h2 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+  }
+</style>

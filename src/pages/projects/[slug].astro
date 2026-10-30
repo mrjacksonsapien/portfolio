@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={project.data.title} description={project.data.summary}>
+  <article class="container project">
+    <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
+    <Content />
+    <!-- Project-specific interactive islands go here (see docs/architecture.md). -->
+  </article>
+</BaseLayout>
+
+<style>
+  .project {
+    padding-top: var(--space-5);
+    max-width: 48rem;
+    margin-inline: 0 auto;
+  }
+</style>

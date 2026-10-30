@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+---
+
+<BaseLayout title="About me">
+  <section class="container about">
+    <SectionHeading label="About" title="About me" />
+    <p>Placeholder. Replace with your presentation.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .about {
+    padding-top: var(--space-5);
+    max-width: 48rem;
+    margin-inline: 0 auto;
+  }
+</style>

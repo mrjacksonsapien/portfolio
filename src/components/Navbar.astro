@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const isActive = (href: string) => currentPath === href || currentPath === `${href}/`;
+const inProjects = currentPath.startsWith('/projects');
+---
+
+<header class="navbar">
+  <div class="container navbar__inner">
+    <a class="navbar__brand" href="/">Your Name</a>
+    <nav aria-label="Main">
+      <ul class="navbar__list">
+        <li><a href="/" aria-current={isActive('/') ? 'page' : undefined}>Home</a></li>
+        <li class="dropdown">
+          <button type="button" class="dropdown__toggle" aria-haspopup="true" aria-current={inProjects ? 'page' : undefined}>
+            Projects <span aria-hidden="true">▾</span>
+          </button>
+          <ul class="dropdown__menu">
+            {
+              projects.map((p) => (
+                <li>
+                  <a href={`/projects/${p.id}`} aria-current={isActive(`/projects/${p.id}`) ? 'page' : undefined}>
+                    {p.data.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+        <li><a href="/about" aria-current={isActive('/about') ? 'page' : undefined}>About me</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(var(--color-bg), transparent);
+  }
+  .navbar__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: var(--space-2);
+  }
+  .navbar__brand {
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .navbar__list {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  nav a,
+  .dropdown__toggle {
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  nav a:hover,
+  .dropdown__toggle:hover,
+  [aria-current='page'] {
+    color: var(--color-fg);
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropdown__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 12rem;
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    display: none;
+  }
+  .dropdown__menu li {
+    padding-block: 0.25rem;
+  }
+  .dropdown:hover .dropdown__menu,
+  .dropdown:focus-within .dropdown__menu {
+    display: block;
+  }
+</style>

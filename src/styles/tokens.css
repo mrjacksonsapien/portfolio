@@ -1,0 +1,26 @@
+:root {
+  --color-bg: #000;
+  --color-fg: #fff;
+  --color-fg-muted: rgb(255 255 255 / 0.6);
+  --color-fg-faint: rgb(255 255 255 / 0.35);
+  --color-line: rgb(255 255 255 / 0.15);
+
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Bebas Neue', Impact, sans-serif;
+  --font-accent: 'Instrument Serif', Georgia, serif;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-md: 1rem;
+  --text-display: clamp(3.5rem, 11vw, 10rem);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 8rem;
+
+  --gutter: clamp(1rem, 3vw, 2rem);
+  --max-width: 80rem;
+}

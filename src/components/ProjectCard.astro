@@ -1,0 +1,44 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  summary: string;
+  year: number;
+  tags: string[];
+}
+
+const { id, title, summary, year, tags } = Astro.props;
+---
+
+<a class="card" href={`/projects/${id}`}>
+  <span class="meta">{year}</span>
+  <h3 class="card__title">{title}</h3>
+  <p class="card__summary">{summary}</p>
+  <span class="meta">{tags.join(' / ')}</span>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: 1px solid var(--color-line);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .card:hover,
+  .card:focus-visible {
+    border-color: var(--color-fg);
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .card__summary {
+    margin: 0;
+    color: var(--color-fg-muted);
+  }
+</style>
