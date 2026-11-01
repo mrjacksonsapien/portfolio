@@ -1,14 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
-import Starfield from '../islands/Starfield.svelte';
 import BitGrid from '../islands/BitGrid.svelte';
 import { site } from '../data/site';
 ---
 
 <BaseLayout title="About me">
   <div class="about-page">
-    <Starfield client:idle />
     <BitGrid client:idle />
     <section class="container about">
       <SectionHeading label="About" title="About me" />
@@ -21,6 +19,9 @@ import { site } from '../data/site';
   .about-page {
     position: relative;
     min-height: 70dvh;
+    /* Extend the grid over the footer's top margin so it reaches the footer. */
+    padding-bottom: var(--space-6);
+    margin-bottom: calc(-1 * var(--space-6));
   }
   .about {
     padding-top: var(--space-5);
