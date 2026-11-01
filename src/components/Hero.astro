@@ -1,10 +1,12 @@
 ---
 import Starfield from '../islands/Starfield.svelte';
+import BlochSphere from '../islands/BlochSphere.svelte';
 import { site } from '../data/site';
 ---
 
 <section class="hero">
   <Starfield client:idle />
+  <BlochSphere client:idle />
   <div class="container hero__inner">
     <h1 class="display">
       <span class="accent">{site.headline.lead}</span><br />{site.headline.main}

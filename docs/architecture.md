@@ -27,7 +27,7 @@ src/
   pages/            index.astro, about.astro, projects/[slug].astro
   layouts/          BaseLayout.astro (html shell, navbar, footer)
   components/       Navbar, Footer, Hero, SectionHeading, ProjectCard (static)
-  islands/          Starfield.svelte (hero visual, client:idle)
+  islands/          Starfield.svelte, BlochSphere.svelte (hero visuals, client:idle)
   content/          projects/*.md (see content.md)
   content.config.ts collection schemas
   styles/           tokens.css, global.css
