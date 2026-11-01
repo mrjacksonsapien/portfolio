@@ -1,6 +1,6 @@
 # Handoff: Portfolio build-out after the initial scaffold
 
-Last updated: 2026-10-31
+Last updated: 2026-10-31 (SGL project page with illustrated story added, uncommitted)
 
 ## Goal
 
@@ -19,7 +19,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 - [x] Hero visual: `src/islands/Starfield.svelte` is now a real starfield (drift, twinkle, pointer parallax, pauses off screen, static under reduced motion), hydrated with `client:idle`. Not yet checked in a browser.
 - [ ] Design and implement the interactive islands on project pages (`src/pages/projects/[slug].astro`). Discuss with the user what each project needs first.
 - [x] Site content (name, headline, intro, about, social links) is set in `src/data/site.ts`. The navbar has GitHub and LinkedIn icons.
-- [ ] The user adds the real projects in `src/content/projects/` (next step, to be discussed). Remove the three `project-N.md` placeholders when real ones exist.
+- [ ] The user adds the real projects in `src/content/projects/`. Project 1 is done: `sgl.md` with the live `SglDemo` island (not yet checked in a browser; the text about learning linear algebra is generic and needs the user's real story). `project-2.md` and `project-3.md` are still placeholders.
 - [x] Added `public/favicon.svg`, theme-color and basic Open Graph tags (`lang` was already set).
 - [ ] Still missing metadata: a social preview image (`og:image`, needs a design) and a sitemap (needs `site` in `astro.config.mjs`, so the final domain first).
 - [x] Mobile navigation: tap toggle added in `Navbar.astro`. Not yet tested on a real touch device. Known quirk: on desktop, closing by clicking the toggle while it keeps focus leaves the menu visible through `:focus-within`.

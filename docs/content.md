@@ -16,11 +16,20 @@ order: 1            # lower comes first (optional, default 0)
 cover: /images/x.png  # optional, file in public/
 repoUrl: https://...  # optional
 liveUrl: https://...  # optional
+demo: sgl             # optional, embeds an interactive island (allowed values in content.config.ts)
+story:                # optional illustrated walkthrough, one zigzag row per step
+  - title: Step title
+    body: Plain text.
+    visual: mesh        # optional: mesh | transform | culling | projection | clipping | raster
+    visualLabel: Accessible description of the animation.
+    link: { label: Text, href: https://... }   # optional
 draft: false          # true hides it everywhere
 ---
 
 Markdown body shown on the project page.
 ```
+
+`story` steps alternate text left / visual right, then the reverse. A step without `visual` is text only. The visuals are SGL-specific (see `architecture.md`).
 
 The home grid, the navbar dropdown and the project page all read this collection.
 

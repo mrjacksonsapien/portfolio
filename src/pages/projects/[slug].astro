@@ -2,6 +2,9 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
+import SglDemo from '../../islands/SglDemo.svelte';
+import SglStage from '../../islands/SglStage.svelte';
+import SglPipeline from '../../islands/SglPipeline.svelte';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => !data.draft);
@@ -16,9 +19,35 @@ const { Content } = await render(project);
   <article class="container project">
     <div class="project__inner">
       <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
+      {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible /></div>}
       <div class="rise" style="--d:0.7s"><Content /></div>
     </div>
-    <!-- Project-specific interactive islands go here (see docs/architecture.md). -->
+    {
+      project.data.story.length > 0 && (
+        <div class="story">
+          {project.data.demo === 'sgl' && (
+            <div class="story__bg" aria-hidden="true">
+              <SglPipeline client:visible />
+            </div>
+          )}
+          {project.data.story.map((step, i) => (
+            <section class:list={['step', 'reveal', { 'step--flip': i % 2 === 1, 'step--text-only': !step.visual }]}>
+              <div class="step__text">
+                <span class="meta">{String(i + 1).padStart(2, '0')} / {project.data.story.length}</span>
+                <h3 class="display step__title">{step.title}</h3>
+                <p>{step.body}</p>
+                {step.link && <a href={step.link.href}>{step.link.label} →</a>}
+              </div>
+              {step.visual && (
+                <div class="step__visual">
+                  <SglStage client:visible kind={step.visual} label={step.visualLabel ?? step.title} />
+                </div>
+              )}
+            </section>
+          ))}
+        </div>
+      )
+    }
   </article>
 </BaseLayout>
 
@@ -28,5 +57,60 @@ const { Content } = await render(project);
   }
   .project__inner {
     max-width: 48rem;
+  }
+  .story {
+    position: relative;
+    margin-top: var(--space-5);
+  }
+  /* The pipeline animation stays put behind the steps while the page scrolls. */
+  .story__bg {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    margin-bottom: -100dvh;
+    pointer-events: none;
+  }
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 22rem);
+    align-items: center;
+    gap: var(--space-5);
+    padding-block: var(--space-4);
+  }
+  .step--flip {
+    grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
+  }
+  .step--flip .step__text {
+    order: 2;
+  }
+  .step--text-only {
+    grid-template-columns: minmax(0, 48rem);
+  }
+  .step__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: 40rem;
+  }
+  .step__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  .step__text p {
+    margin: 0;
+    font-size: var(--text-md);
+  }
+  .step__text a {
+    align-self: flex-start;
+  }
+  @media (max-width: 52rem) {
+    .step,
+    .step--flip {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
+    }
+    .step--flip .step__text {
+      order: 0;
+    }
   }
 </style>

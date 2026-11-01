@@ -44,6 +44,15 @@
   }
 }
 
+/* Sections further down the page rise as they scroll into view (browsers without scroll-driven animations show them as is). */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}
+
 /* Text revealed one character at a time, like typing. Set --n to the character count. */
 .type {
   display: inline-block;

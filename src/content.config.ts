@@ -13,6 +13,19 @@ const projects = defineCollection({
     cover: z.string().optional(),
     repoUrl: z.url().optional(),
     liveUrl: z.url().optional(),
+    demo: z.enum(['sgl']).optional(),
+    // Optional illustrated walkthrough shown after the body, one zigzag row per step.
+    story: z
+      .array(
+        z.object({
+          title: z.string(),
+          body: z.string(),
+          visual: z.enum(['mesh', 'transform', 'culling', 'projection', 'clipping', 'raster']).optional(),
+          visualLabel: z.string().optional(),
+          link: z.object({ label: z.string(), href: z.url() }).optional(),
+        }),
+      )
+      .default([]),
     draft: z.boolean().default(false),
   }),
 });

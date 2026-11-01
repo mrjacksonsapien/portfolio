@@ -53,6 +53,7 @@ Each one is a separate, self-contained island that can be removed on its own. Re
 | --- | --- | --- | --- |
 | `Starfield.svelte` | Hero | Slowly drifting, twinkling stars with a faint pointer parallax. | `src/components/Hero.astro` |
 | `BlochSphere.svelte` | Hero, over the starfield | Giant wireframe Bloch sphere (outline, equator, meridians, axes, labelled basis states) with a precessing state vector. Sits right of the text on wide screens, centered on narrow ones. | `src/components/Hero.astro` |
+| `SglPipeline.svelte` | SGL project page, behind the story steps | Faint flow of function boxes, arrows, vertex packets and the real matrices applied to them, like a trace of the rendering pipeline. Stays fixed while scrolling. | `src/pages/projects/[slug].astro` |
 | `BitGrid.svelte` | About page | Faint grid of `0`/`1` in the mono font where random bits flip constantly and briefly light up, like a view of memory. | `src/pages/about.astro` |
 
 Notes:
