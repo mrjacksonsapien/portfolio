@@ -4,7 +4,7 @@ Inspiration: `docs/inspiration/` (dark space scene, sparse monospace metadata, l
 
 ## Vibe
 
-Digital, programming and math, set in space. Quiet, precise and minimal, with a single point of visual interest per page. The owner is a systems programmer who sees computer science, mathematics and science through an artistic lens: the art is the machinery itself (bits, stars, quantum states), drawn precisely and slowly.
+Digital, programming and math, set in space. Quiet, precise and minimal, with a single point of visual interest per page. The owner is a system-oriented software engineer (keen to learn more systems programming) who sees computer science, mathematics and science through an artistic lens: the art is the machinery itself (bits, stars, quantum states), drawn precisely and slowly.
 
 ## Color
 

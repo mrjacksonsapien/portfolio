@@ -5,9 +5,9 @@
   import { onMount } from 'svelte';
 
   const CELL = 22; // px
-  const FLIPS_PER_SECOND = 0.6; // fraction of all cells flipped each second
+  const FLIPS_PER_SECOND = 0.12; // fraction of all cells flipped each second
   const FRAME_MS = 50; // redraw throttle (~20 fps)
-  const GLOW_DECAY = 1.8; // per second
+  const GLOW_DECAY = 0.7; // per second
 
   let canvas: HTMLCanvasElement;
 

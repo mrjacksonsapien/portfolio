@@ -7,9 +7,9 @@ export const site = {
   intro:
     'Where deep system architecture meets fine art: crafting powerful, reliable code and breathtaking creative works.',
   about: [
-    "I'm a systems programmer who loves building complex systems and understanding how computers work at their core, so I can bring that depth to my creative side and craft the best user experiences.",
-    'I am also mesmerized by the fundamentals of computer science, mathematics and science, and I see them through an artistic lens as well: the elegance of an algorithm, the symmetry of an equation, the structure hiding inside a physical law.',
-    'What I love most is taking a complex subject and making it simple. When I finally understand something hard, I want to find the clearest way to explain it so other people can understand it too, whether that is through a demo, a diagram or a few plain words.',
+    "I'm a system-oriented software engineer who loves building complex systems and understanding how computers work at their core, so I can bring that depth to my creative side and craft the best user experiences. I'm also eager to learn more about systems programming.",
+    'I am mesmerized by the fundamentals of computer science, mathematics and science, and I see them through an artistic lens: the elegance of an algorithm, the symmetry of an equation, the structure hiding inside a physical law.',
+    'What I love most is making difficult ideas simple. When something hard finally clicks for me, I want to find the clearest way to explain it so others can get it too, whether that is through a demo, a diagram or a few plain words.',
   ],
   links: {
     github: 'https://github.com/mrjacksonsapien',
