@@ -1,7 +1,7 @@
 <script lang="ts">
   // Hero visual: soft translucent ribbons flowing across the hero, inspired by the PS3 boot screen.
   // Filled ribbons with a faint wireframe mesh drawn over them. To remove it: delete the <SilkWaves> line (and its import) in Hero.astro, then this file.
-  // Interactive: ribbons gently lean toward the pointer and flow and swell with scrolling.
+  // Interactive: ribbons flow and swell with scrolling (not with the pointer).
   // Interaction is off under reduced motion.
   // Pauses while off screen or the tab is hidden; renders one static frame under reduced motion.
   import { onMount } from 'svelte';
@@ -28,8 +28,6 @@
   const STRANDS = 7; // mesh lines along each ribbon
   const MESH_ALPHA = 0.9; // mesh opacity as a multiple of the ribbon's fill opacity
   const BASE_Y = 0.55; // ribbon centre line, fraction of the height
-  const POINTER_RADIUS = 0.28; // pointer influence, fraction of the width
-  const POINTER_PULL = 0.15; // how far ribbons lean toward the pointer (0..1)
   const SCROLL_FLOW = 0.002; // wave phase shift per scrolled px
   const SCROLL_SWELL = 0.00008; // extra amplitude per px/s of scroll speed
 
@@ -49,13 +47,7 @@
     let visible = true;
     let fade: CanvasGradient;
 
-    // Interaction state, updated each frame.
-    let pointerClientX = 0;
-    let pointerClientY = 0;
-    let pointerX = 0;
-    let pointerY = 0;
-    let pointerInfluence = 0;
-    let pointerOver = false;
+    // Scroll interaction state, updated each frame.
     let scrollPhase = 0;
     let scrollSwell = 0;
     let lastScrollY = window.scrollY;
@@ -92,21 +84,14 @@
         const n = Math.ceil(width / STEP);
         for (let i = 0; i <= n; i++) {
           const u = i / n;
-          const x = i * STEP;
           const p = r.phase + t * r.speed + scrollPhase * r.freq * 0.3;
           const wave =
             Math.sin(u * Math.PI * 2 * r.freq + p) * 0.6 +
             Math.sin(u * Math.PI * 2 * r.freq * 1.7 - p * 1.3) * 0.4;
           // The ribbon pinches and swells along its length, like folded silk.
           const swell = Math.abs(Math.sin(u * Math.PI * r.freq * 0.8 + p * 0.7 + r.phase));
-          let centre = (BASE_Y + r.offset + (wave * r.amp * (1 + scrollSwell))) * height;
-          let thick = r.thick * (0.15 + 0.85 * swell) * height;
-
-          // Lean toward the pointer, and swell a little where it is.
-          const dx = (x - pointerX) / (width * POINTER_RADIUS);
-          const near = Math.exp(-dx * dx) * pointerInfluence;
-          centre += (pointerY - centre) * POINTER_PULL * near;
-          thick *= 1 + near * 0.3;
+          const centre = (BASE_Y + r.offset + (wave * r.amp * (1 + scrollSwell))) * height;
+          const thick = r.thick * (0.15 + 0.85 * swell) * height;
 
           const half = thick / 2;
           top.push(centre - half);
@@ -150,13 +135,6 @@
       const dt = Math.min(Math.max(t - lastTime, 0.001), 0.1);
       lastTime = t;
 
-      const rect = canvas.getBoundingClientRect();
-      const targetX = pointerClientX - rect.left;
-      const targetY = pointerClientY - rect.top;
-      pointerX += (targetX - pointerX) * Math.min(dt * 2.5, 1);
-      pointerY += (targetY - pointerY) * Math.min(dt * 2.5, 1);
-      pointerInfluence += ((pointerOver ? 1 : 0) - pointerInfluence) * Math.min(dt * 1.5, 1);
-
       const scrollY = window.scrollY;
       const velocity = (scrollY - lastScrollY) / dt;
       lastScrollY = scrollY;
@@ -199,24 +177,7 @@
     });
     intersectionObserver.observe(canvas);
 
-    function onPointerMove(event: PointerEvent) {
-      const rect = canvas.getBoundingClientRect();
-      pointerClientX = event.clientX;
-      pointerClientY = event.clientY;
-      pointerOver =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-    }
-
-    function onPointerLeave() {
-      pointerOver = false;
-    }
-
     const onVisibility = () => (document.hidden ? stop() : start());
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.addEventListener('pointerleave', onPointerLeave);
     document.addEventListener('visibilitychange', onVisibility);
     reducedMotion.addEventListener('change', onMotionChange);
 
@@ -224,8 +185,6 @@
       stop();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerleave', onPointerLeave);
       document.removeEventListener('visibilitychange', onVisibility);
       reducedMotion.removeEventListener('change', onMotionChange);
     };

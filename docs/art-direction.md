@@ -52,7 +52,7 @@ Each one is a separate, self-contained island that can be removed on its own. Re
 | Visual | Where | Description | Remove from |
 | --- | --- | --- | --- |
 | `Starfield.svelte` | Hero | Slowly drifting, twinkling stars with a faint pointer parallax. | `src/components/Hero.astro` |
-| `SilkWaves.svelte` | Hero, over the starfield | PS3-boot-screen style flowing ribbons: layered translucent filled white ribbons with a faint wireframe mesh overlay that pinch and swell, fading out at both ends. Interactive: gently lean toward the pointer, flow and swell with scroll. | `src/components/Hero.astro` |
+| `SilkWaves.svelte` | Hero, over the starfield | PS3-boot-screen style flowing ribbons: layered translucent filled white ribbons with a faint wireframe mesh overlay that pinch and swell, fading out at both ends. Interactive: flow and swell with scroll. | `src/components/Hero.astro` |
 | `SglPipeline.svelte` | SGL project page, behind the story steps | Faint flow of function boxes, arrows, vertex packets and the real matrices applied to them, like a trace of the rendering pipeline. Stays fixed while scrolling. | `src/pages/projects/[slug].astro` |
 | `BitGrid.svelte` | About page | Faint grid of `0`/`1` in the mono font where random bits flip constantly and briefly light up, like a view of memory. | `src/pages/about.astro` |
 
