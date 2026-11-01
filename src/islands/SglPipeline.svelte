@@ -15,7 +15,7 @@
   const COL_GAP = 90;
   const SPEED = 70; // px/s
   const PACKET_SPACING = 520; // px along the path
-  const ALPHA = 0.2;
+  const ALPHA = 0.1;
 
   // The data the packets carry: illustrative values pushed through the real maths (same matrix layout, row-vector
   // convention and projection formula as SGL; near 0.1, far 40, fov 90, 640x480).
@@ -176,11 +176,12 @@
       }
 
       // Boxes.
-      g.font = `10px ${font}`;
-      g.textAlign = 'center';
       nodes.forEach((n, i) => {
+        // drawMatrix changes the font and alignment, so set them again for every box.
+        g.font = `10px ${font}`;
+        g.textAlign = 'center';
         const glow = lit.get(i) ?? 0;
-        g.globalAlpha = ALPHA + glow * 0.3;
+        g.globalAlpha = ALPHA + glow * 0.12;
         g.strokeRect(n.x - BOX_W / 2, n.y - BOX_H / 2, BOX_W, BOX_H);
         g.fillText(stages[n.stage].fn, n.x, n.y);
         const s = stages[n.stage];

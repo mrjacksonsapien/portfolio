@@ -1,6 +1,6 @@
 # Handoff: Portfolio build-out after the initial scaffold
 
-Last updated: 2026-10-31 (SGL project page with illustrated story added, uncommitted)
+Last updated: 2026-10-31
 
 ## Goal
 
@@ -19,6 +19,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 - [x] Hero visual: `src/islands/Starfield.svelte` is now a real starfield (drift, twinkle, pointer parallax, pauses off screen, static under reduced motion), hydrated with `client:idle`. Not yet checked in a browser.
 - [ ] Design and implement the interactive islands on project pages (`src/pages/projects/[slug].astro`). Discuss with the user what each project needs first.
 - [x] Site content (name, headline, intro, about, social links) is set in `src/data/site.ts`. The navbar has GitHub and LinkedIn icons.
+- [ ] Project 1 (SGL) is on `develop`: live demo island (`SglDemo`), illustrated story (`SglStage`, `sgl-stages.ts`) and pipeline background (`SglPipeline`); see `docs/architecture.md`. None of it has been checked by an agent in a browser, only by the user. The same approach (frontmatter `story`, one island per visual) can be reused for projects 2 and 3.
 - [ ] The user adds the real projects in `src/content/projects/`. Project 1 is done: `sgl.md` with the live `SglDemo` island (not yet checked in a browser; the text about learning linear algebra is generic and needs the user's real story). `project-2.md` and `project-3.md` are still placeholders.
 - [x] Added `public/favicon.svg`, theme-color and basic Open Graph tags (`lang` was already set).
 - [ ] Still missing metadata: a social preview image (`og:image`, needs a design) and a sitemap (needs `site` in `astro.config.mjs`, so the final domain first).
@@ -37,7 +38,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 
 ## Open questions
 
-- What interactive behavior should each project page have?
+- What should projects 2 and 3 be, and what visuals or interactions do they need? (Project 1 is done.)
 
 ## Pointers
 
