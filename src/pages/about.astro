@@ -1,20 +1,34 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
+import Starfield from '../islands/Starfield.svelte';
+import BitGrid from '../islands/BitGrid.svelte';
 import { site } from '../data/site';
 ---
 
 <BaseLayout title="About me">
-  <section class="container about">
-    <SectionHeading label="About" title="About me" />
-    <p>{site.about}</p>
-  </section>
+  <div class="about-page">
+    <Starfield client:idle />
+    <BitGrid client:idle />
+    <section class="container about">
+      <SectionHeading label="About" title="About me" />
+      {site.about.map((paragraph) => <p>{paragraph}</p>)}
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
+  .about-page {
+    position: relative;
+    min-height: 70dvh;
+  }
   .about {
     padding-top: var(--space-5);
     max-width: 48rem;
     margin-inline: 0 auto;
+  }
+  p {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-md);
   }
 </style>

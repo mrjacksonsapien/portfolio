@@ -39,3 +39,7 @@ Subtle and slow. Interactive and animated visuals are lazy-loaded islands. Respe
 ## Hero Bloch sphere
 
 `src/islands/BlochSphere.svelte` draws a large wireframe Bloch sphere (precessing state vector) over the starfield. It is purely decorative. To remove it, delete its import and `<BlochSphere client:idle />` line in `src/components/Hero.astro`, then delete the island file.
+
+## About page background
+
+The about page reuses the `Starfield` island and adds `src/islands/BitGrid.svelte`, a grid of `0`/`1` characters in the mono font that flip constantly like a view of memory. To remove the grid, delete its import and `<BitGrid client:idle />` line in `src/pages/about.astro`, then delete the island file.
