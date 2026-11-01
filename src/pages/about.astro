@@ -18,10 +18,8 @@ import { site } from '../data/site';
 <style>
   .about-page {
     position: relative;
-    min-height: 70dvh;
-    /* Extend the grid over the footer's top margin so it reaches the footer. */
-    padding-bottom: var(--space-6);
-    margin-bottom: calc(-1 * var(--space-6));
+    /* Let the grid grow past the page into the footer's top margin, without moving the footer. */
+    --bitgrid-extend: var(--space-6);
   }
   .about {
     padding-top: var(--space-5);

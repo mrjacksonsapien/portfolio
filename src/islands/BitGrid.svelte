@@ -132,8 +132,9 @@
   canvas {
     position: absolute;
     inset: 0;
+    bottom: calc(-1 * var(--bitgrid-extend, 0px));
     width: 100%;
-    height: 100%;
+    height: calc(100% + var(--bitgrid-extend, 0px));
     z-index: -1;
     pointer-events: none;
   }

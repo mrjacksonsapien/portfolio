@@ -42,4 +42,4 @@ Subtle and slow. Interactive and animated visuals are lazy-loaded islands. Respe
 
 ## About page background
 
-The about page uses `src/islands/BitGrid.svelte` as its background, a faint grid of `0`/`1` characters in the mono font that flip constantly like a view of memory. To remove the grid, delete its import and `<BitGrid client:idle />` line in `src/pages/about.astro`, then delete the island file. The page wrapper's bottom padding and matching negative margin (in `about.astro`) make the grid reach the footer.
+The about page uses `src/islands/BitGrid.svelte` as its background, a faint grid of `0`/`1` characters in the mono font that flip constantly like a view of memory. To remove the grid, delete its import and `<BitGrid client:idle />` line in `src/pages/about.astro`, then delete the island file. The `--bitgrid-extend` custom property set on the wrapper in `about.astro` makes the grid grow past the page into the footer's top margin, so it reaches the footer without moving it.
