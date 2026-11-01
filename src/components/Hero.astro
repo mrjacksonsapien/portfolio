@@ -1,12 +1,12 @@
 ---
 import Starfield from '../islands/Starfield.svelte';
-import BlochSphere from '../islands/BlochSphere.svelte';
+import SilkWaves from '../islands/SilkWaves.svelte';
 import { site } from '../data/site';
 ---
 
 <section class="hero">
   <Starfield client:idle />
-  <BlochSphere client:idle />
+  <SilkWaves client:idle />
   <div class="container hero__inner">
     <h1 class="display">
       <span class="accent type" style={`--n:${site.headline.lead.length}`}>{site.headline.lead}</span><br /><span class="wipe" style="--d:0.9s">{site.headline.main}</span>
