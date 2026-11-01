@@ -1,7 +1,6 @@
 // Site-wide content shared by several components. Edit values here, not in components.
 export const site = {
   name: 'Martin Soltan',
-  title: 'Byte and Beauty',
   description: "Martin Soltan's Portfolio",
   headline: { lead: 'Experience in', main: 'first row seats.' },
   intro:
