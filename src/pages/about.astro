@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
+import { site } from '../data/site';
 ---
 
 <BaseLayout title="About me">
   <section class="container about">
     <SectionHeading label="About" title="About me" />
-    <p>Placeholder. Replace with your presentation.</p>
+    <p>{site.about}</p>
   </section>
 </BaseLayout>
 

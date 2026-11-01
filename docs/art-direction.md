@@ -1,6 +1,6 @@
 # Art direction
 
-Inspiration: `docs/inspiration/` (dark space scene, sparse monospace metadata, large condensed display type mixed with an italic serif accent, one luminous focal object).
+Inspiration: `docs/inspiration/` (dark space scene, sparse monospace metadata, large condensed display type mixed with a bold monospace accent, one luminous focal object).
 
 ## Vibe
 
@@ -18,9 +18,8 @@ Digital, programming and math, set in space. Quiet, precise and minimal, with a 
 | --- | --- | --- |
 | Body, metadata, code feel | JetBrains Mono | `--font-mono` |
 | Big headlines | Bebas Neue, uppercase | `--font-display` |
-| Accent words | Instrument Serif italic | `--font-accent` |
 
-Fonts are self-hosted through `@fontsource`. Metadata is small (`--text-xs`) and muted. Headlines mix display and accent (`<span class="accent">Word</span> TITLE`).
+Fonts are self-hosted through `@fontsource`. Metadata is small (`--text-xs`) and muted. Headlines mix display and accent (`<span class="accent">Word</span> TITLE`); the accent is bold JetBrains Mono, never italic or serif.
 
 ## Layout
 

@@ -2,7 +2,6 @@
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/700.css';
 @import '@fontsource/bebas-neue/400.css';
-@import '@fontsource/instrument-serif/400-italic.css';
 
 *,
 *::before,
@@ -52,8 +51,9 @@ h3 {
 }
 
 .accent {
-  font-family: var(--font-accent);
-  font-style: italic;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.04em;
   text-transform: none;
 }
 

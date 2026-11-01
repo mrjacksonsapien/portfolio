@@ -26,10 +26,7 @@ The home grid, the navbar dropdown and the project page all read this collection
 
 ## Other placeholders to replace
 
-- Name, title and intro: `Navbar.astro`, `Hero.astro`, `Footer.astro`
-- About page text: `src/pages/about.astro`
-- Social links: `Footer.astro`
-- Site description and title: `BaseLayout.astro`
+Shared site content (name, description, headline, intro, about text, social links) lives in `src/data/site.ts`. The navbar, hero, footer, about page and layout read from it. Social links appear in both the navbar (icons) and the footer.
 
 ## Media
 

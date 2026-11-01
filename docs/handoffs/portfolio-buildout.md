@@ -18,7 +18,8 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 - [ ] Ask the user for feedback on the visual result in the browser, then adjust the layout and styling.
 - [x] Hero visual: `src/islands/Starfield.svelte` is now a real starfield (drift, twinkle, pointer parallax, pauses off screen, static under reduced motion), hydrated with `client:idle`. Not yet checked in a browser.
 - [ ] Design and implement the interactive islands on project pages (`src/pages/projects/[slug].astro`). Discuss with the user what each project needs first.
-- [ ] The user adds the real content: name, title, intro (`Navbar.astro`, `Hero.astro`, `Footer.astro`), about text (`about.astro`), social links, and real projects in `src/content/projects/`. Remove the three `project-N.md` placeholders when real ones exist.
+- [x] Site content (name, headline, intro, about, social links) is set in `src/data/site.ts`. The navbar has GitHub and LinkedIn icons.
+- [ ] The user adds the real projects in `src/content/projects/` (next step, to be discussed). Remove the three `project-N.md` placeholders when real ones exist.
 - [x] Added `public/favicon.svg`, theme-color and basic Open Graph tags (`lang` was already set).
 - [ ] Still missing metadata: a social preview image (`og:image`, needs a design) and a sitemap (needs `site` in `astro.config.mjs`, so the final domain first).
 - [x] Mobile navigation: tap toggle added in `Navbar.astro`. Not yet tested on a real touch device. Known quirk: on desktop, closing by clicking the toggle while it keeps focus leaves the menu visible through `:focus-within`.
@@ -31,7 +32,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 - Astro with static output, Svelte islands, plain CSS with tokens, npm. These were confirmed by the user.
 - `main` is production only. Never commit or push to it directly. Commit to `develop`.
 - All documentation is Markdown inside `docs/`. The user writes the actual content. Agents only build the UI and components.
-- Design: black background, white text, mono, display and serif accent fonts. See `docs/art-direction.md`.
+- Design: black background, white text, mono and display fonts. No italic or serif: the accent style is bold JetBrains Mono (user request). See `docs/art-direction.md`.
 - Navigation: Home, Projects (dropdown), About me. Home shows project overviews and each project has its own page.
 
 ## Open questions
