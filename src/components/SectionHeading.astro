@@ -8,8 +8,8 @@ const { label, title } = Astro.props;
 ---
 
 <header class="section-heading">
-  <span class="meta">{label}</span>
-  <h2 class="display accent">{title}</h2>
+  <span class="meta rise">{label}</span>
+  <h2 class="display accent"><span class="type" style={`--n:${title.length}`}>{title}</span></h2>
 </header>
 
 <style>

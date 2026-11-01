@@ -15,7 +15,7 @@ const { Content } = await render(project);
 <BaseLayout title={project.data.title} description={project.data.summary}>
   <article class="container project">
     <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
-    <Content />
+    <div class="rise" style="--d:0.7s"><Content /></div>
     <!-- Project-specific interactive islands go here (see docs/architecture.md). -->
   </article>
 </BaseLayout>

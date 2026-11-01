@@ -5,12 +5,13 @@ interface Props {
   summary: string;
   year: number;
   tags: string[];
+  index?: number;
 }
 
-const { id, title, summary, year, tags } = Astro.props;
+const { id, title, summary, year, tags, index = 0 } = Astro.props;
 ---
 
-<a class="card" href={`/projects/${id}`}>
+<a class="card rise" style={`--d:${0.8 + index * 0.12}s`} href={`/projects/${id}`}>
   <span class="meta">{year}</span>
   <h3 class="card__title">{title}</h3>
   <p class="card__summary">{summary}</p>

@@ -10,7 +10,7 @@ import { site } from '../data/site';
     <BitGrid client:idle />
     <section class="container about">
       <SectionHeading label="About" title="About me" />
-      {site.about.map((paragraph) => <p>{paragraph}</p>)}
+      {site.about.map((paragraph, i) => <p class="rise" style={`--d:${0.7 + i * 0.25}s`}>{paragraph}</p>)}
     </section>
   </div>
 </BaseLayout>

@@ -15,7 +15,7 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
   <section class="container projects">
     <SectionHeading label="01 / Projects" title="Selected work" />
     <div class="grid">
-      {projects.map((p) => <ProjectCard id={p.id} {...p.data} />)}
+      {projects.map((p, index) => <ProjectCard id={p.id} index={index} {...p.data} />)}
     </div>
   </section>
 </BaseLayout>
