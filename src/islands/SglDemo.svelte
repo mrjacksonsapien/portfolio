@@ -7,10 +7,11 @@
   // WASD to move, Space / Shift for up / down, Esc to release.
   // Only the engine API used below (Camera, Scene, Renderer, Cube, Vector3) is a contract.
   import { onMount } from 'svelte';
-  import { createShape, type ShapeKind, type V3 } from './sgl-shapes';
+  import { createFastRenderer, createIslandScene } from './sgl-island';
+  import type { V3 } from './sgl-shapes';
 
   const SGL_URL = 'https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js';
-  const MOVE_SPEED = 4; // world units per second
+  const MOVE_SPEED = 6; // world units per second
   const LOOK_SENSITIVITY = 0.15; // degrees per pixel of mouse movement
 
   const WIDTH = 640;
@@ -53,7 +54,7 @@
       // SGL's camera.position is the world position with z negated (intuitive x right, y up, z forward), and
       // orientation.x / .y are minus the pitch-down / turn-right angles. The camera starts above the scene,
       // looking down at 45 degrees along a diagonal.
-      const [cam, target]: [V3, V3] = [[-4.2, 6, 2.3], [0, 0, 6.5]];
+      const [cam, target]: [V3, V3] = [[-9, 13.7, -9], [0, 1, 0]];
       const dx = target[0] - cam[0];
       const dy = target[1] - cam[1];
       const dz = target[2] - cam[2];
@@ -62,32 +63,16 @@
       const camera = new sgl.Camera(
         canvas,
         0.1,
-        40,
+        80,
         60,
         new sgl.Vector3(cam[0], cam[1], -cam[2]),
         new sgl.Vector3(-down, -turn, 0),
       );
       const scene = new sgl.Scene(camera);
-      const renderer = new sgl.Renderer(canvas, scene);
-
-      // A character in the middle, surrounded by shapes standing on the same ground (y = -1).
-      const layout: [ShapeKind, number, number, number, number][] = [
-        ['character', 0, -1, 6.5, 1.6],
-        ['cube', 3.8, 0, 3.8, 1],
-        ['pyramid', -4.2, 0, 7.5, 1],
-        ['sphere', 4.5, 0, 8, 1],
-        ['cube', -2.5, 0, 10, 1],
-        ['pyramid', 1.5, 0, 10.8, 1],
-        ['sphere', 6, 0, 5.5, 1],
-      ];
-      layout.forEach(([kind, x, y, z, size], i) => {
-        const shape = createShape(sgl, kind, [x, y, z], size);
-        const rate = kind === 'character' ? 25 : 30 + i * 12;
-        shape.act = () => {
-          if (!reducedMotion) shape.rotation.y += dt * rate;
-        };
-        scene.add(shape);
-      });
+      // Stock SGL looks vertices up with indexOf (quadratic), which cannot cope with thousands of triangles.
+      const renderer = createFastRenderer(sgl, canvas, scene);
+      const island = createIslandScene(sgl, scene);
+      let time = 0;
 
       const yaw = () => (camera.orientation.y * Math.PI) / 180;
 
@@ -112,6 +97,10 @@
             Number(keys.has('KeyD')) - Number(keys.has('KeyA')),
             Number(keys.has('Space')) - Number(keys.has('ShiftLeft') || keys.has('ShiftRight')),
           );
+        }
+        if (!reducedMotion) {
+          time += dt;
+          island.update(time);
         }
         scene.act();
         renderer.render();

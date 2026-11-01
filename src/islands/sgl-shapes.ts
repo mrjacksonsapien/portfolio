@@ -10,25 +10,27 @@ type Sgl = any;
 export type ShapeKind = 'cube' | 'pyramid' | 'sphere' | 'character';
 
 export type V3 = [number, number, number];
-type Face = [number, number, number];
-type Rgb = [number, number, number];
+export type Face = [number, number, number];
+export type Rgb = [number, number, number];
 
 /** A piece of geometry: positions, index triples, and for each face a point it must face away from. */
-interface Part {
+export interface Part {
   p: V3[];
   f: Face[];
   ref: V3[];
   color: Rgb;
   /** Optional per-face colors, cycled; overrides `color`. */
   colors?: Rgb[];
+  /** Flip every face after orienting, e.g. for the inside of a hull. */
+  invert?: boolean;
 }
 
-const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const mul = (a: V3, k: number): V3 => [a[0] * k, a[1] * k, a[2] * k];
-const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const cross = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-const norm = (a: V3): V3 => mul(a, 1 / (Math.hypot(...a) || 1));
+export const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+export const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+export const mul = (a: V3, k: number): V3 => [a[0] * k, a[1] * k, a[2] * k];
+export const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+export const cross = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+export const norm = (a: V3): V3 => mul(a, 1 / (Math.hypot(...a) || 1));
 
 /** Intuitive space to SGL world space. */
 export const toEngine = ([x, y, z]: V3): V3 => [-x, -y, z];
@@ -36,7 +38,7 @@ export const toEngine = ([x, y, z]: V3): V3 => [-x, -y, z];
 // --- Primitives ----------------------------------------------------------------------------
 
 /** UV sphere / ellipsoid. `rings` bands pole to pole; `maxPhi` (0..1 of a half turn) stops early for an open cap. */
-function ellipsoid(center: V3, radii: V3, segments: number, rings: number, color: Rgb, maxPhi = 1): Part {
+export function ellipsoid(center: V3, radii: V3, segments: number, rings: number, color: Rgb, maxPhi = 1): Part {
   const p: V3[] = [[center[0], center[1] + radii[1], center[2]]];
   const last = Math.max(1, Math.round(rings * maxPhi));
   const closed = maxPhi >= 1;
@@ -71,7 +73,7 @@ function ellipsoid(center: V3, radii: V3, segments: number, rings: number, color
 }
 
 /** A tube from `a` to `b` whose elliptical cross-section changes along the way: rings are [t, radiusU, radiusW]. */
-function loft(a: V3, b: V3, rings: [number, number, number][], segments: number, color: Rgb): Part {
+export function loft(a: V3, b: V3, rings: [number, number, number][], segments: number, color: Rgb): Part {
   const axis = sub(b, a);
   const dir = norm(axis);
   const u = norm(cross(dir, Math.abs(dir[2]) > 0.9 ? [1, 0, 0] : [0, 0, 1]));
@@ -118,7 +120,7 @@ const ball = (c: V3, r: number, color: Rgb): Part => ellipsoid(c, [r, r, r], 8, 
 const LIGHT = norm([-0.4, 0.8, -0.45]);
 
 /** Merges parts into one SGL mesh. With `lit`, a fixed light is baked into each triangle's color. */
-function toMesh(sgl: Sgl, parts: Part[], at: V3, lit: boolean, scale = 1) {
+export function toMesh(sgl: Sgl, parts: Part[], at: V3, lit: boolean, scale = 1) {
   const positions: V3[] = [];
   const triangles: { i: Face; color: Rgb }[] = [];
   for (const part of parts) {
@@ -128,7 +130,7 @@ function toMesh(sgl: Sgl, parts: Part[], at: V3, lit: boolean, scale = 1) {
       const [a, b, c] = [positions[base + i], positions[base + j], positions[base + k]];
       const normal = cross(sub(b, a), sub(c, a));
       const centroid = mul(add(add(a, b), c), 1 / 3);
-      const outward = dot(normal, sub(centroid, mul(part.ref[n], scale))) >= 0;
+      const outward = (dot(normal, sub(centroid, mul(part.ref[n], scale))) >= 0) !== !!part.invert;
       const face: Face = outward ? [base + i, base + j, base + k] : [base + i, base + k, base + j];
       const shade = lit ? 0.4 + 0.6 * Math.max(0, dot(norm(outward ? normal : mul(normal, -1)), LIGHT)) : 1;
       triangles.push({ i: face, color: (part.colors?.[n % part.colors.length] ?? part.color).map((ch) => Math.round(ch * shade)) as Rgb });
