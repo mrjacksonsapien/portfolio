@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Hero visual: slow drifting starfield with twinkle and a faint pointer parallax.
+  // Hero visual: slow drifting starfield with twinkle.
   // Hydrated lazily by the parent (client:idle). Draws a single static frame when
   // the user prefers reduced motion, and pauses while off screen or the tab is hidden.
   import { onMount } from 'svelte';
@@ -13,7 +13,6 @@
 
   const STAR_DENSITY = 1 / 6000; // stars per CSS pixel
   const DRIFT = 0.004; // fraction of the height per second at full depth
-  const PARALLAX = 14; // max pointer offset in px at full depth
 
   let canvas: HTMLCanvasElement;
 
@@ -30,10 +29,6 @@
     let raf = 0;
     let last = 0;
     let visible = true;
-    let pointerX = 0;
-    let pointerY = 0;
-    let smoothX = 0;
-    let smoothY = 0;
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
@@ -59,8 +54,8 @@
       for (const s of stars) {
         const twinkle = reducedMotion.matches ? 1 : 0.65 + 0.35 * Math.sin(time / 1500 + s.phase);
         const size = 0.6 + s.z * 1.4;
-        const x = s.x * width + smoothX * s.z * PARALLAX;
-        const y = s.y * height + smoothY * s.z * PARALLAX;
+        const x = s.x * width;
+        const y = s.y * height;
         ctx!.globalAlpha = (0.25 + s.z * 0.75) * twinkle;
         ctx!.fillRect(x, y, size, size);
       }
@@ -70,8 +65,6 @@
     function frame(time: number) {
       const dt = Math.min((time - last) / 1000, 0.1);
       last = time;
-      smoothX += (pointerX - smoothX) * 0.05;
-      smoothY += (pointerY - smoothY) * 0.05;
       for (const s of stars) {
         s.y += DRIFT * (0.2 + s.z) * dt;
         if (s.y > 1) {
@@ -94,11 +87,6 @@
       raf = 0;
     }
 
-    function onPointerMove(event: PointerEvent) {
-      pointerX = event.clientX / window.innerWidth - 0.5;
-      pointerY = event.clientY / window.innerHeight - 0.5;
-    }
-
     function onMotionChange() {
       if (reducedMotion.matches) {
         stop();
@@ -119,7 +107,6 @@
     intersectionObserver.observe(canvas);
 
     const onVisibility = () => (document.hidden ? stop() : start());
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
     reducedMotion.addEventListener('change', onMotionChange);
 
@@ -127,7 +114,6 @@
       stop();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('visibilitychange', onVisibility);
       reducedMotion.removeEventListener('change', onMotionChange);
     };
