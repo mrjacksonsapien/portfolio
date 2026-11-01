@@ -7,11 +7,12 @@
   // WASD to move, Space / Shift for up / down, Esc to release.
   // Only the engine API used below (Camera, Scene, Renderer, Cube, Vector3) is a contract.
   import { onMount } from 'svelte';
-  import { createFastRenderer, createIslandScene } from './sgl-island';
+  import { createFastRenderer, createIslandScene, DETAILS } from './sgl-island';
   import type { V3 } from './sgl-shapes';
 
   const SGL_URL = 'https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js';
-  const MOVE_SPEED = 6; // world units per second
+  const MOVE_SPEED = 6;
+  const DETAIL = DETAILS.low; // DETAILS.high for the 7,600-triangle version // world units per second
   const LOOK_SENSITIVITY = 0.15; // degrees per pixel of mouse movement
 
   const WIDTH = 640;
@@ -71,7 +72,7 @@
       const scene = new sgl.Scene(camera);
       // Stock SGL looks vertices up with indexOf (quadratic), which cannot cope with thousands of triangles.
       const renderer = createFastRenderer(sgl, canvas, scene);
-      const island = createIslandScene(sgl, scene);
+      const island = createIslandScene(sgl, scene, DETAIL);
       let time = 0;
 
       const yaw = () => (camera.orientation.y * Math.PI) / 180;

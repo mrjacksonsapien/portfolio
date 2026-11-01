@@ -16,6 +16,43 @@ const smooth = (a: number, b: number, x: number) => {
 };
 const mix = (a: Rgb, b: Rgb, t: number): Rgb => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 
+// --- Level of detail -----------------------------------------------------------------------
+
+/** Every resolution in the scene. `low` keeps the same layout with far fewer triangles. */
+export interface Detail {
+  terrainRings: number;
+  terrainSegments: number;
+  waterRings: number;
+  waterSegments: number;
+  dockPlanks: number;
+  postSides: number;
+  frontPlanks: number;
+  sidePlanks: number;
+  gableRows: number;
+  trunkRings: number;
+  trunkSides: number;
+  fronds: number;
+  frondPoints: number;
+  coconut: [number, number];
+  boatStations: number;
+  boatAround: number;
+}
+
+export const DETAILS: Record<'high' | 'low', Detail> = {
+  high: {
+    terrainRings: 26, terrainSegments: 48, waterRings: 26, waterSegments: 64,
+    dockPlanks: 16, postSides: 8, frontPlanks: 12, sidePlanks: 10, gableRows: 5,
+    trunkRings: 14, trunkSides: 10, fronds: 10, frondPoints: 11, coconut: [8, 6],
+    boatStations: 12, boatAround: 8,
+  },
+  low: {
+    terrainRings: 9, terrainSegments: 22, waterRings: 11, waterSegments: 30,
+    dockPlanks: 8, postSides: 5, frontPlanks: 4, sidePlanks: 3, gableRows: 2,
+    trunkRings: 6, trunkSides: 5, fronds: 7, frondPoints: 5, coconut: [5, 3],
+    boatStations: 6, boatAround: 4,
+  },
+};
+
 // --- Terrain -------------------------------------------------------------------------------
 
 const SHACK: [number, number] = [-1.2, 1.0];
@@ -48,9 +85,9 @@ function terrainColor(h: number, x: number, z: number): Rgb {
   return mix(sand, grass, smooth(0.3, 0.7, h));
 }
 
-function terrain(): Part {
-  const rings = 26;
-  const segments = 48;
+function terrain(lod: Detail): Part {
+  const rings = lod.terrainRings;
+  const segments = lod.terrainSegments;
   const maxRadius = 6.6;
   const p: V3[] = [];
   p.push([0, terrainHeight(0, 0), 0]);
@@ -171,24 +208,24 @@ function ribbon(path: V3[], widths: number[], side: V3, colors: Rgb[], away: V3 
 const WOOD: Rgb[] = [[150, 105, 66], [134, 94, 58], [162, 117, 76], [124, 86, 54]];
 const DARK_WOOD: Rgb = [92, 62, 40];
 
-function dock(): Part[] {
+function dock(lod: Detail): Part[] {
   const parts: Part[] = [];
   const x = 1.7;
   const [z0, z1] = [-3.7, -9.2];
   const deckY = 0.55;
-  const count = 16;
+  const count = lod.dockPlanks;
   const step = (z1 - z0) / count;
   for (let i = 0; i < count; i++) {
     parts.push(box([x, deckY, z0 + step * (i + 0.5)], [1.5, 0.1, Math.abs(step) - 0.05], WOOD[i % WOOD.length]));
   }
   for (const dx of [-0.55, 0.55]) parts.push(box([x + dx, deckY - 0.13, (z0 + z1) / 2], [0.12, 0.14, Math.abs(z1 - z0)], DARK_WOOD));
   for (const z of [-4.6, -6.4, -8.2, -9.1]) {
-    for (const dx of [-0.72, 0.72]) parts.push(cylinder([x + dx, -0.9, z], [x + dx, deckY + 0.35, z], 0.09, DARK_WOOD, 8));
+    for (const dx of [-0.72, 0.72]) parts.push(cylinder([x + dx, -0.9, z], [x + dx, deckY + 0.35, z], 0.09, DARK_WOOD, lod.postSides));
   }
   return parts;
 }
 
-function shack(): Part[] {
+function shack(lod: Detail): Part[] {
   const parts: Part[] = [];
   const [cx, cz] = SHACK;
   const ground = terrainHeight(cx, cz);
@@ -201,14 +238,14 @@ function shack(): Part[] {
   parts.push(box([cx, floor, cz], [w + 0.1, 0.1, d + 0.1], DARK_WOOD));
 
   // Walls made of vertical planks.
-  const planks = 12;
+  const planks = lod.frontPlanks;
   const pw = w / planks;
   for (let i = 0; i < planks; i++) {
     const px = cx - w / 2 + pw * (i + 0.5);
     parts.push(box([px, floor + 0.05 + h / 2, cz - d / 2], [pw - 0.015, h, 0.08], WOOD[i % WOOD.length]));
     parts.push(box([px, floor + 0.05 + h / 2, cz + d / 2], [pw - 0.015, h, 0.08], WOOD[(i + 1) % WOOD.length]));
   }
-  const sidePlanks = 10;
+  const sidePlanks = lod.sidePlanks;
   const sw = d / sidePlanks;
   for (let i = 0; i < sidePlanks; i++) {
     const pz = cz - d / 2 + sw * (i + 0.5);
@@ -232,7 +269,7 @@ function shack(): Part[] {
   parts.push(box([cx, eave + (Math.sin(pitch) * slab) / 2 + 0.05, cz + half / 2], [w + 0.6, 0.1, slab], [140, 54, 44], [pitch, 0, 0]));
   parts.push(box([cx, eave + Math.sin(pitch) * slab + 0.1, cz], [w + 0.65, 0.1, 0.2], DARK_WOOD));
   // Gable ends: stacked planks that shrink toward the ridge.
-  const rows = 5;
+  const rows = lod.gableRows;
   for (let i = 0; i < rows; i++) {
     const t = (i + 0.5) / rows;
     const span = (d - 0.1) * (1 - t) * 0.98;
@@ -242,10 +279,10 @@ function shack(): Part[] {
   return parts;
 }
 
-function palm(): Part[] {
+function palm(lod: Detail): Part[] {
   const parts: Part[] = [];
   const base: V3 = [1.7, terrainHeight(1.7, 1.5) - 0.1, 1.5];
-  const rings = 14;
+  const rings = lod.trunkRings;
   const path: V3[] = [];
   const radii: number[] = [];
   const colors: Rgb[] = [];
@@ -255,17 +292,17 @@ function palm(): Part[] {
     radii.push(0.2 * (1 - 0.45 * t) + 0.12 * Math.max(0, 1 - t * 8));
     colors.push(i % 2 ? [128, 98, 66] : [102, 76, 50]);
   }
-  parts.push(sweep(path, radii, 10, colors));
+  parts.push(sweep(path, radii, lod.trunkSides, colors));
   const top = path[rings - 1];
 
-  const fronds = 10;
+  const fronds = lod.fronds;
   for (let n = 0; n < fronds; n++) {
     const th = (2 * Math.PI * n) / fronds + 0.3;
     const dir: V3 = [Math.cos(th), 0, Math.sin(th)];
     const side: V3 = [-Math.sin(th), 0, Math.cos(th)];
     const length = 2.2 + 0.3 * Math.sin(n * 2.3);
     const lift = 0.7 + 0.25 * Math.cos(n * 1.7);
-    const points = 11;
+    const points = lod.frondPoints;
     const leafPath: V3[] = [];
     const widths: number[] = [];
     for (let i = 0; i < points; i++) {
@@ -277,16 +314,16 @@ function palm(): Part[] {
     parts.push(...ribbon(leafPath, widths, side, [green, mul(green, 0.85) as Rgb]));
   }
   for (const [dx, dz] of [[0.14, 0.05], [-0.1, 0.12], [0.02, -0.14]]) {
-    parts.push(ellipsoid([top[0] + dx, top[1] - 0.15, top[2] + dz], [0.11, 0.13, 0.11], 8, 6, [96, 66, 40]));
+    parts.push(ellipsoid([top[0] + dx, top[1] - 0.15, top[2] + dz], [0.11, 0.13, 0.11], lod.coconut[0], lod.coconut[1], [96, 66, 40]));
   }
   return parts;
 }
 
 // --- Boat ----------------------------------------------------------------------------------
 
-function boat(): Part[] {
-  const stations = 12;
-  const around = 8;
+function boat(lod: Detail): Part[] {
+  const stations = lod.boatStations;
+  const around = lod.boatAround;
   const length = 1.35;
   const hull = (shrink: number, lift: number): V3[] => {
     const p: V3[] = [];
@@ -446,19 +483,19 @@ export function createFastRenderer(sgl: Sgl, canvas: HTMLCanvasElement, scene: a
   return new (FastRenderer as any)(canvas, scene);
 }
 
-export function createIslandScene(sgl: Sgl, scene: any) {
+export function createIslandScene(sgl: Sgl, scene: any, lod: Detail = DETAILS.high) {
   // Static pieces: lit once, then merged into a few meshes.
-  scene.add(toMesh(sgl, [terrain()], [0, 0, 0], true));
-  scene.add(toMesh(sgl, shack(), [0, 0, 0], true));
-  scene.add(toMesh(sgl, dock(), [0, 0, 0], true));
-  scene.add(toMesh(sgl, palm(), [0, 0, 0], true));
+  scene.add(toMesh(sgl, [terrain(lod)], [0, 0, 0], true));
+  scene.add(toMesh(sgl, shack(lod), [0, 0, 0], true));
+  scene.add(toMesh(sgl, dock(lod), [0, 0, 0], true));
+  scene.add(toMesh(sgl, palm(lod), [0, 0, 0], true));
 
-  const boatMesh = toMesh(sgl, boat(), [3.1, 0, -6.6], true);
+  const boatMesh = toMesh(sgl, boat(lod), [3.1, 0, -6.6], true);
   scene.add(boatMesh);
 
   // Water: a disc of rings, re-shaped and re-lit every frame.
-  const rings = 26;
-  const segments = 64;
+  const rings = lod.waterRings;
+  const segments = lod.waterSegments;
   const rest: V3[] = [[0, 0, 0]];
   for (let k = 1; k <= rings; k++) {
     const r = (WATER_RADIUS * k) / rings;
