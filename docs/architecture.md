@@ -27,7 +27,7 @@ src/
   pages/            index.astro, about.astro, projects/[slug].astro
   layouts/          BaseLayout.astro (html shell, navbar, footer)
   components/       Navbar, Footer, Hero, SectionHeading, ProjectCard (static)
-  islands/          Starfield.svelte (placeholder island)
+  islands/          Starfield.svelte (hero visual, client:idle)
   content/          projects/*.md (see content.md)
   content.config.ts collection schemas
   styles/           tokens.css, global.css
@@ -36,7 +36,7 @@ public/             files served as-is
 
 ## Pages and navigation
 
-- Navbar (in `BaseLayout`): **Home**, **Projects** (dropdown listing every non-draft project), **About me**. The dropdown is CSS-only (hover and focus-within), with no JS.
+- Navbar (in `BaseLayout`): **Home**, **Projects** (dropdown listing every non-draft project), **About me**. The dropdown opens on hover and focus-within (CSS), plus a small inline script for touch (tap toggles `data-open`, outside click and Escape close it).
 - Home (`/`): hero and an overview grid of projects.
 - Project page (`/projects/<slug>`): generated from the content collection. Project-specific interactive islands are added to the page for that project (not yet implemented).
 - About (`/about`): presentation page.

@@ -18,6 +18,11 @@ const fullTitle = title === 'Home' ? 'Portfolio' : `${title} · Portfolio`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
     <title>{fullTitle}</title>
   </head>
   <body>
