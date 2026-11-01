@@ -2,7 +2,7 @@
 export const site = {
   name: 'Martin Soltan',
   description: "Martin Soltan's Portfolio",
-  headline: { lead: 'Experience in', main: 'first row seats.' },
+  headline: { lead: 'Byte and', main: 'beauty.' },
   intro:
     'Where deep system architecture meets fine art: crafting powerful, reliable code and breathtaking creative works.',
   about:
