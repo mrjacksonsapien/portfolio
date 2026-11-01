@@ -47,11 +47,18 @@ Static output (`output: 'static'`) to `dist/`. See `deployment.md`.
 
 ## SGL demo island
 
-`src/islands/SglDemo.svelte` is not bundled with the SGL engine. It imports `sgl.js` at runtime from `https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js`, so the demo follows the `main` branch of the SGL repository automatically (jsDelivr caches branches for up to ~12 hours; purge at `https://www.jsdelivr.com/tools/purge` to force it). If the load fails the island shows a message with a link to the repo.
+`src/islands/SglDemo.svelte` is not bundled with the SGL engine. It imports `sgl.js` at runtime from `https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js`, so the demo follows the `main` branch of the SGL repository automatically (jsDelivr caches branches for up to ~12 hours; purge at `https://www.jsdelivr.com/tools/purge` to force it). If the load fails the island shows a message with a link to the repo. An info button under the viewport shows the `demoNotes` from the project's frontmatter (what differs from stock SGL).
+
+The scene is an island (`src/islands/sgl-island.ts`): terrain, animated waves, a dock with a boat, a shack and a palm tree, built from SGL's `Mesh`, `Vertex` and `Triangle`. `sgl-shapes.ts` holds the geometry primitives (and earlier experiments: cube, pyramid, sphere, character; currently unused).
+
+- **Detail:** `DETAILS.low` / `DETAILS.high` in `sgl-island.ts` set every resolution (about 2,000 vs 7,600 triangles). Switch with the `DETAIL` constant in `SglDemo.svelte`.
+- **Resolution:** the canvas renders at 480x360 and is scaled with a CSS transform. SGL maps to the screen with the canvas's CSS size but fills a width x height buffer, so the two must be equal: never stretch the canvas with CSS width/height.
+- **Coordinates:** SGL's world is x-left, y-down, z-forward (and `camera.position` is the world position with z negated). Models are built in an intuitive space and converted with `toEngine()`. Triangles are wound so the front face points outward: `(b - a) x (c - a)` away from the solid.
+- **Engine overrides:** `createFastRenderer` subclasses `Renderer` and replaces two methods with versions that give the same output: `convertSceneToFlatArrays` (a Map instead of the quadratic `indexOf`) and `clip` (triangles fully inside the view skip it; crossing ones still use SGL's `clip`). Everything else is SGL's own. If SGL's main renames these methods, update `sgl-island.ts`.
 
 Consequences to keep in mind:
 
-- The island depends on this API of SGL: `Camera`, `Scene`, `Renderer`, `Cube`, `Vector3`, `Scene.add`, `Mesh.act`/`rotation`. If a change on SGL's main breaks them, update the island.
+- The island depends on this API of SGL: `Camera`, `Scene`, `Renderer` (`convertSceneToFlatArrays`, `clip`, `SIZEOF_*`), `Mesh`, `Vertex`, `Triangle`, `Color`, `Vector3`, `Matrix.multiplyMatrixWithVertex`. If a change on SGL's main breaks them, update the island.
 - It runs third-party-hosted code on the site. It is the owner's own repository, but a compromised repo or CDN would run on the portfolio origin.
 - `raw.githubusercontent.com` cannot be used: it serves `text/plain` with `nosniff`, which browsers reject for modules.
 

@@ -14,6 +14,8 @@ const projects = defineCollection({
     repoUrl: z.url().optional(),
     liveUrl: z.url().optional(),
     demo: z.enum(['sgl']).optional(),
+    // Short notes shown in the demo's info popover (what was changed in the engine for the embedded render).
+    demoNotes: z.array(z.string()).default([]),
     // Optional illustrated walkthrough shown after the body, one zigzag row per step.
     story: z
       .array(

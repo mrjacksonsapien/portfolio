@@ -17,6 +17,8 @@ cover: /images/x.png  # optional, file in public/
 repoUrl: https://...  # optional
 liveUrl: https://...  # optional
 demo: sgl             # optional, embeds an interactive island (allowed values in content.config.ts)
+demoNotes:            # optional, shown in the demo's info popover
+  - Plain text note.
 story:                # optional illustrated walkthrough, one zigzag row per step
   - title: Step title
     body: Plain text.

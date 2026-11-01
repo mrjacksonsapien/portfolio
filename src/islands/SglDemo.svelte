@@ -5,23 +5,31 @@
   // this demo follows it (jsDelivr may cache a branch for up to ~12 hours).
   // The controls mirror the original demo: click to focus (pointer lock), mouse to look,
   // WASD to move, Space / Shift for up / down, Esc to release.
-  // Only the engine API used below (Camera, Scene, Renderer, Cube, Vector3) is a contract.
+  // The scene (an island, see sgl-island.ts) and two speed-ups for SGL's renderer are ours; the pipeline is SGL's.
+  // The `notes` prop (from the project's frontmatter) is shown in the info popover next to the controls.
   import { onMount } from 'svelte';
   import { createFastRenderer, createIslandScene, DETAILS } from './sgl-island';
   import type { V3 } from './sgl-shapes';
 
   const SGL_URL = 'https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js';
-  const MOVE_SPEED = 6;
-  const DETAIL = DETAILS.low; // DETAILS.high for the 7,600-triangle version // world units per second
+  const MOVE_SPEED = 6; // world units per second
+  const DETAIL = DETAILS.low; // DETAILS.high for the 7,600-triangle version
   const LOOK_SENSITIVITY = 0.15; // degrees per pixel of mouse movement
 
-  const WIDTH = 640;
-  const HEIGHT = 480;
+  // SGL's rendering cost follows the pixel count, so it draws at a reduced size and the canvas is scaled up.
+  const WIDTH = 480;
+  const HEIGHT = 360;
+
+  let { notes = [], notesTitle = 'Changes to the engine' }: { notes?: string[]; notesTitle?: string } = $props();
+  let hovering = $state(false);
+  let pinned = $state(false);
+  let infoEl: HTMLElement | undefined = $state();
+  const showInfo = $derived(hovering || pinned);
 
   let canvas: HTMLCanvasElement;
   let frameEl: HTMLDivElement;
-  let scale = 1;
-  let status: 'loading' | 'ready' | 'locked' | 'error' = 'loading';
+  let scale = $state(1);
+  let status: 'loading' | 'ready' | 'locked' | 'error' = $state('loading');
 
   onMount(() => {
     let disposed = false;
@@ -176,6 +184,15 @@
   });
 </script>
 
+<svelte:window
+  onclick={(e) => {
+    if (pinned && !infoEl?.contains(e.target as Node)) pinned = false;
+  }}
+  onkeydown={(e) => {
+    if (e.key === 'Escape') pinned = false;
+  }}
+/>
+
 <figure class="demo">
   <div class="demo__frame" bind:this={frameEl} style:--scale={scale}>
     <canvas bind:this={canvas} width={WIDTH} height={HEIGHT} aria-label="Interactive SGL software-rendered 3D scene"></canvas>
@@ -190,8 +207,40 @@
     {/if}
   </div>
   <figcaption class="meta">
-    Live: rendered on the CPU by SGL, loaded from its <code>main</code> branch.
-    Click to focus · mouse to look · WASD to move · Space / Shift up / down · Esc to release.
+    <span>
+      Live: rendered on the CPU by SGL, loaded from its <code>main</code> branch.
+      Click to focus · mouse to look · WASD to move · Space / Shift up / down · Esc to release.
+    </span>
+    {#if notes.length}
+      <span
+        class="info"
+        bind:this={infoEl}
+        onmouseenter={() => (hovering = true)}
+        onmouseleave={() => (hovering = false)}
+        role="presentation"
+      >
+        <button
+          type="button"
+          class="info__button"
+          aria-label={notesTitle}
+          aria-expanded={showInfo}
+          aria-controls="sgl-demo-notes"
+          onclick={() => (pinned = !pinned)}
+          onfocus={() => (hovering = true)}
+          onblur={() => (hovering = false)}
+        >i</button>
+        {#if showInfo}
+          <div class="info__panel" id="sgl-demo-notes" role="note">
+            <strong>{notesTitle}</strong>
+            <ul>
+              {#each notes as note}
+                <li>{note}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+      </span>
+    {/if}
   </figcaption>
 </figure>
 
@@ -210,8 +259,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 640px;
-    height: 480px;
+    width: 480px;
+    height: 360px;
     transform: scale(var(--scale, 1));
     transform-origin: 0 0;
     background: var(--color-bg);
@@ -228,6 +277,51 @@
     pointer-events: auto;
   }
   figcaption {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+  .info {
+    position: relative;
+    flex: none;
+  }
+  .info__button {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 1px solid var(--color-fg-faint);
+    border-radius: 50%;
+    background: none;
+    color: var(--color-fg-muted);
+    font: inherit;
+    font-size: var(--text-xs);
+    line-height: 1;
+    cursor: pointer;
+  }
+  .info__button:hover,
+  .info__button[aria-expanded='true'] {
+    border-color: var(--color-fg);
+    color: var(--color-fg);
+  }
+  .info__panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + var(--space-1));
+    z-index: 2;
+    width: min(28rem, 85vw);
+    padding: var(--space-2);
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    color: var(--color-fg);
+    line-height: 1.5;
+  }
+  .info__panel ul {
+    margin: var(--space-1) 0 0;
+    padding-left: 1.1rem;
+  }
+  .info__panel li + li {
     margin-top: var(--space-1);
   }
 </style>

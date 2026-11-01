@@ -6,6 +6,12 @@ tags: [javascript, 3d, math]
 order: 1
 repoUrl: https://github.com/mrjacksonsapien/SGL
 demo: sgl
+demoNotes:
+  - "The pipeline is SGL's own, loaded live from its main branch: view matrix, backface culling, projection, perspective division, screen mapping, and rasterization with the depth buffer."
+  - "Two methods are replaced with faster versions that give the same result. Flattening the scene looks vertices up in a Map instead of indexOf, which gets quadratic with thousands of vertices. Clipping skips triangles that are fully inside the view and still hands the ones crossing a plane to SGL's own clip."
+  - "It renders at 480 by 360 and is scaled up to fit, because the cost of SGL's rasterizer follows the number of pixels. The canvas keeps its native size and is scaled with CSS, since SGL maps to the canvas's CSS size."
+  - "The island, waves and boat are built from SGL's Mesh, Vertex and Triangle classes, and the waves move the vertices before each frame. SGL ships only a cube, so every other shape is built here. It is a low-poly version of a larger scene."
+  - "The mouse look and WASD controls are reimplemented for this page rather than using SGL's demo script."
 story:
   - title: One point, then three, then a cube
     visual: mesh

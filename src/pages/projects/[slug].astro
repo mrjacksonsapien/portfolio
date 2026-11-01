@@ -19,7 +19,7 @@ const { Content } = await render(project);
   <article class="container project">
     <div class="project__inner">
       <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
-      {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible /></div>}
+      {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible notes={project.data.demoNotes} /></div>}
       <div class="rise" style="--d:0.7s"><Content /></div>
     </div>
     {
