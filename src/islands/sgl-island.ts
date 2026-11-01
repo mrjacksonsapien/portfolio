@@ -528,7 +528,7 @@ export function createIslandScene(sgl: Sgl, scene: any, lod: Detail = DETAILS.hi
   scene.add(waterMesh);
 
   const heights = new Float32Array(rest.length);
-  const eye: V3 = [-9, 13.7, -9];
+  const eye: V3 = [2, 5.5, -15];
 
   /** Moves the vertices and recolors every triangle by its slope, with a glint where it reflects the sun. */
   function update(t: number) {

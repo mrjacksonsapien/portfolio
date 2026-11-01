@@ -61,9 +61,9 @@
       if (disposed) return;
 
       // SGL's camera.position is the world position with z negated (intuitive x right, y up, z forward), and
-      // orientation.x / .y are minus the pitch-down / turn-right angles. The camera starts above the scene,
-      // looking down at 45 degrees along a diagonal.
-      const [cam, target]: [V3, V3] = [[-9, 13.7, -9], [0, 1, 0]];
+      // orientation.x / .y are minus the pitch-down / turn-right angles. The camera starts in front of the shack
+      // (its door and the dock face -z), slightly above the water and looking a little down at the island.
+      const [cam, target]: [V3, V3] = [[2, 5.5, -15], [0.5, 1.2, 0]];
       const dx = target[0] - cam[0];
       const dy = target[1] - cam[1];
       const dz = target[2] - cam[2];
