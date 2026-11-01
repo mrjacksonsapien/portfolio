@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
+import GithubIcon from '../../components/GithubIcon.astro';
 import SglDemo from '../../islands/SglDemo.svelte';
 import SglStage from '../../islands/SglStage.svelte';
 import SglPipeline from '../../islands/SglPipeline.svelte';
@@ -18,7 +19,22 @@ const { Content } = await render(project);
 <BaseLayout title={project.data.title} description={project.data.summary}>
   <article class="container project">
     <div class="project__inner">
-      <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
+      <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title}>
+        {
+          project.data.repoUrl && (
+            <a class="repo-link fade" style="--d:0.6s" href={project.data.repoUrl} aria-label={`${project.data.title} on GitHub`} target="_blank" rel="noopener noreferrer">
+              <GithubIcon size={28} />
+            </a>
+          )
+        }
+        {
+          project.data.repoUrl && (
+            <a slot="subtitle" class="repo-subtitle fade" style="--d:0.6s" href={project.data.repoUrl} target="_blank" rel="noopener noreferrer">
+              {project.data.title} on GitHub →
+            </a>
+          )
+        }
+      </SectionHeading>
       {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible notes={project.data.demoNotes} /></div>}
       <div class="rise" style="--d:0.7s"><Content /></div>
     </div>
@@ -34,7 +50,14 @@ const { Content } = await render(project);
             <section class:list={['step', 'reveal', { 'step--flip': i % 2 === 1, 'step--text-only': !step.visual }]}>
               <div class="step__text">
                 <span class="meta">{String(i + 1).padStart(2, '0')} / {project.data.story.length}</span>
-                <h3 class="display step__title">{step.title}</h3>
+                <h3 class="display step__title">
+                  {step.title}
+                  {step.link?.href.includes('github.com') && (
+                    <a class="repo-link" href={step.link.href} aria-label={step.link.label} target="_blank" rel="noopener noreferrer">
+                      <GithubIcon size={28} />
+                    </a>
+                  )}
+                </h3>
                 <p>{step.body}</p>
                 {step.link && <a href={step.link.href}>{step.link.label} →</a>}
               </div>
@@ -57,6 +80,22 @@ const { Content } = await render(project);
   }
   .project__inner {
     max-width: 48rem;
+  }
+  .repo-link {
+    display: inline-flex;
+    color: var(--color-fg-muted);
+    transition: color 0.2s;
+  }
+  .step__title .repo-link {
+    margin-left: var(--space-1);
+    vertical-align: middle;
+  }
+  .repo-subtitle {
+    align-self: flex-start;
+  }
+  .repo-link:hover,
+  .repo-link:focus-visible {
+    color: var(--color-fg);
   }
   .story {
     position: relative;

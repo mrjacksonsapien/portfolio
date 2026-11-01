@@ -65,7 +65,7 @@ story:
       already used before I could name them.
   - title: RustSGL
     body: >-
-      The same idea rebuilt in Rust. Where SGL is about learning linear algebra, RustSGL is about performance.
+      The same idea rebuilt in Rust. Where SGL is about learning linear algebra, RustSGL is about performance. It is still a work in progress.
     link:
       label: RustSGL on GitHub
       href: https://github.com/mrjacksonsapien/RustSGL

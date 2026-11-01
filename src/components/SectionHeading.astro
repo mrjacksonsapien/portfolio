@@ -9,7 +9,11 @@ const { label, title } = Astro.props;
 
 <header class="section-heading">
   <span class="meta rise">{label}</span>
-  <h2 class="display accent"><span class="type" style={`--n:${title.length}`}>{title}</span></h2>
+  <div class="section-heading__row">
+    <h2 class="display accent"><span class="type" style={`--n:${title.length}`}>{title}</span></h2>
+    <slot />
+  </div>
+  <slot name="subtitle" />
 </header>
 
 <style>
@@ -18,6 +22,11 @@ const { label, title } = Astro.props;
     flex-direction: column;
     gap: var(--space-1);
     margin-bottom: var(--space-4);
+  }
+  .section-heading__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
   h2 {
     font-size: clamp(2.5rem, 6vw, 5rem);

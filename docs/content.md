@@ -14,7 +14,7 @@ year: 2026
 tags: [web, math]
 order: 1            # lower comes first (optional, default 0)
 cover: /images/x.png  # optional, file in public/
-repoUrl: https://...  # optional
+repoUrl: https://...  # optional, shows a GitHub icon on the home card and next to the project title
 liveUrl: https://...  # optional
 demo: sgl             # optional, embeds an interactive island (allowed values in content.config.ts)
 demoNotes:            # optional, shown in the demo's info popover

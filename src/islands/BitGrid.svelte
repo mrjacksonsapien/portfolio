@@ -55,7 +55,7 @@
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const i = r * cols + c;
-          ctx!.globalAlpha = 0.04 + glow[i] * 0.3;
+          ctx!.globalAlpha = 0.025 + glow[i] * 0.2;
           ctx!.fillText(bits[i] ? '1' : '0', c * CELL + CELL / 2, r * CELL + CELL / 2);
         }
       }

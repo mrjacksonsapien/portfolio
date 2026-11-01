@@ -44,6 +44,11 @@
   }
 }
 
+/* Plain slow fade. Stagger with --d (seconds). */
+.fade {
+  animation: fade-in 1s ease-out var(--d, 0.3s) both;
+}
+
 /* Sections further down the page rise as they scroll into view (browsers without scroll-driven animations show them as is). */
 @supports (animation-timeline: view()) {
   .reveal {

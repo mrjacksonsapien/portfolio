@@ -1,36 +1,69 @@
 ---
+import GithubIcon from './GithubIcon.astro';
+
 interface Props {
   id: string;
   title: string;
   summary: string;
   year: number;
   tags: string[];
+  repoUrl?: string;
   index?: number;
 }
 
-const { id, title, summary, year, tags, index = 0 } = Astro.props;
+const { id, title, summary, year, tags, repoUrl, index = 0 } = Astro.props;
 ---
 
-<a class="card rise" style={`--d:${0.8 + index * 0.12}s`} href={`/projects/${id}`}>
+<article class="card rise" style={`--d:${0.8 + index * 0.12}s`}>
   <span class="meta">{year}</span>
-  <h3 class="card__title">{title}</h3>
+  <h3 class="card__title"><a class="card__link" href={`/projects/${id}`}>{title}</a></h3>
   <p class="card__summary">{summary}</p>
   <span class="meta">{tags.join(' / ')}</span>
-</a>
+  {
+    repoUrl && (
+      <a class="card__repo fade" style={`--d:${1 + index * 0.12}s`} href={repoUrl} aria-label={`${title} on GitHub`} target="_blank" rel="noopener noreferrer">
+        <GithubIcon />
+      </a>
+    )
+  }
+</article>
 
 <style>
   .card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
     padding: var(--space-3);
     border: 1px solid var(--color-line);
-    text-decoration: none;
     transition: border-color 0.2s;
   }
   .card:hover,
-  .card:focus-visible {
+  .card:focus-within {
     border-color: var(--color-fg);
+  }
+  .card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* The title link covers the whole card; the GitHub icon sits above it. */
+  .card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .card__repo {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 1;
+    display: inline-flex;
+    color: var(--color-fg-muted);
+    transition: color 0.2s;
+  }
+  .card__repo:hover,
+  .card__repo:focus-visible {
+    color: var(--color-fg);
   }
   .card__title {
     font-family: var(--font-display);
