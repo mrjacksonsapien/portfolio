@@ -57,11 +57,12 @@
 }
 
 @keyframes wipe {
+  /* Negative insets keep glyph overhang (e.g. the hook of a "j") from being cut off. */
   from {
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-0.25em 100% -0.25em -0.25em);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-0.25em -0.25em -0.25em -0.25em);
   }
 }
 

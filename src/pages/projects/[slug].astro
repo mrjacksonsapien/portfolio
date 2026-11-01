@@ -14,8 +14,10 @@ const { Content } = await render(project);
 
 <BaseLayout title={project.data.title} description={project.data.summary}>
   <article class="container project">
-    <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
-    <div class="rise" style="--d:0.7s"><Content /></div>
+    <div class="project__inner">
+      <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title} />
+      <div class="rise" style="--d:0.7s"><Content /></div>
+    </div>
     <!-- Project-specific interactive islands go here (see docs/architecture.md). -->
   </article>
 </BaseLayout>
@@ -23,7 +25,8 @@ const { Content } = await render(project);
 <style>
   .project {
     padding-top: var(--space-5);
+  }
+  .project__inner {
     max-width: 48rem;
-    margin-inline: 0 auto;
   }
 </style>

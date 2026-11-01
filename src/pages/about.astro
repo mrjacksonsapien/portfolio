@@ -9,8 +9,10 @@ import { site } from '../data/site';
   <div class="about-page">
     <BitGrid client:idle />
     <section class="container about">
-      <SectionHeading label="About" title="About me" />
-      {site.about.map((paragraph, i) => <p class="rise" style={`--d:${0.7 + i * 0.25}s`}>{paragraph}</p>)}
+      <div class="about__inner">
+        <SectionHeading label="About" title="About me" />
+        {site.about.map((paragraph, i) => <p class="rise" style={`--d:${0.7 + i * 0.25}s`}>{paragraph}</p>)}
+      </div>
     </section>
   </div>
 </BaseLayout>
@@ -24,8 +26,9 @@ import { site } from '../data/site';
   }
   .about {
     padding-top: var(--space-5);
+  }
+  .about__inner {
     max-width: 48rem;
-    margin-inline: 0 auto;
   }
   p {
     margin: 0 0 var(--space-3);
