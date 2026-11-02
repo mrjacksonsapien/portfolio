@@ -325,11 +325,11 @@ function clipping(f: Frame) {
   g.fillRect(0, 0, plane, h);
   g.globalAlpha = 0.9;
   g.lineWidth = 2;
-  line(g, [plane, h * 0.1], [plane, h * 0.9]);
+  line(g, [plane, h * 0.1], [plane, h * 0.8]);
   g.lineWidth = 1;
   text(f, 'near plane', plane, h * 0.1 - 8, 0.6, 'center');
-  text(f, 'behind', plane - 10, h * 0.9 + 14, 0.4, 'right');
-  text(f, 'visible', plane + 10, h * 0.9 + 14, 0.7);
+  text(f, 'behind', plane - 10, h * 0.8 + 14, 0.4, 'right');
+  text(f, 'visible', plane + 10, h * 0.8 + 14, 0.7);
 
   g.globalAlpha = 0.3;
   g.setLineDash([3, 4]);

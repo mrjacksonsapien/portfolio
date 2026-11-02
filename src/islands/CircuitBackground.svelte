@@ -356,7 +356,7 @@
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.7; /* keeps the text above it readable */
+    opacity: 0.45; /* keeps the text above it readable */
     animation: circuit-in 2s ease-out both;
   }
   @keyframes circuit-in {
