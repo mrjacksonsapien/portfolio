@@ -4,6 +4,8 @@
   // shows the game. Electricity flows along the traces as short pulses; the matrix is scanned one column at a time.
   // Fixed to the viewport, so its cost does not grow with the page. Its opacity follows the scroll position. Pauses while the tab is hidden and draws one
   // still frame under reduced motion.
+  // With `contained` it fills its positioned parent instead of the viewport (project cards on the home page): it
+  // covers the card, centered on the LED matrix, at a steady opacity.
   // To remove it: delete the <CircuitBackground> line (and its import) in ShowcaseProject.astro, then this file.
   import { onMount } from 'svelte';
   import { ROOM, WIFI_FRAMES, CHECK } from './maze-stages';
@@ -27,6 +29,8 @@
   const OPACITY_TOP = 0.45;
   const OPACITY_READING = 0.3;
   const GAIN_TOP = 1; // lines are this much brighter over the banner
+  const CARD_OPACITY = 0.56;
+  const CARD_GAIN = 1.3; // brighter lines in a card
   const FADE_DISTANCE = 0.7; // in viewport heights of scrolling
 
   const ESP = { x: 80, y: 300, w: 180, h: 300 };
@@ -72,6 +76,7 @@
   const powerTrace = trace([[60, 120], [1540, 120]]);
   const groundTrace = trace([[60, 860], [1540, 860]]);
 
+  let { contained = false }: { contained?: boolean } = $props();
   let canvas: HTMLCanvasElement;
 
   onMount(() => {
@@ -87,6 +92,7 @@
     let height = 0;
     let raf = 0;
     let t0 = 0;
+    let visible = true; // false while a contained canvas is scrolled off screen
     let gain = 1; // brightens every line at the top of the page, see updateOpacity
 
     /** Strokes the part of a trace between two distances along it. */
@@ -161,8 +167,16 @@
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.clearRect(0, 0, canvas.width, canvas.height);
       const dpr = canvas.width / width;
-      const scale = Math.min(width / WORLD_W, height / WORLD_H);
-      g.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * (width - WORLD_W * scale) / 2, dpr * (height - WORLD_H * scale) / 2);
+      let scale = Math.min(width / WORLD_W, height / WORLD_H);
+      let ox = (width - WORLD_W * scale) / 2;
+      let oy = (height - WORLD_H * scale) / 2;
+      if (contained) {
+        // Show the whole circuit, a little larger than fit, centered on the matrix side.
+        scale = Math.min(width / WORLD_W, height / WORLD_H) * 1.25;
+        ox = Math.min(0, Math.max(width - WORLD_W * scale, width / 2 - 800 * scale));
+        oy = (height - WORLD_H * scale) / 2;
+      }
+      g.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * ox, dpr * oy);
       g.strokeStyle = color;
       g.fillStyle = color;
       g.lineWidth = 1;
@@ -305,14 +319,20 @@
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       draw(reducedMotion.matches ? 3.1 : (performance.now() - t0) / 1000);
     }
 
     function updateOpacity() {
+      if (contained) {
+        canvas.style.opacity = String(CARD_OPACITY);
+        gain = CARD_GAIN;
+        return;
+      }
       const k = Math.min(Math.max(window.scrollY / (window.innerHeight * FADE_DISTANCE), 0), 1);
       const eased = k * k * (3 - 2 * k);
       canvas.style.opacity = String(OPACITY_TOP + (OPACITY_READING - OPACITY_TOP) * eased);
@@ -325,7 +345,7 @@
     }
 
     function start() {
-      if (raf || reducedMotion.matches || document.hidden) return;
+      if (raf || reducedMotion.matches || document.hidden || !visible) return;
       raf = requestAnimationFrame(frame);
     }
 
@@ -347,6 +367,16 @@
     updateOpacity();
     resize();
     start();
+    const intersection = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+      else stop();
+    });
+    const resizeObserver = new ResizeObserver(resize);
+    if (contained) {
+      intersection.observe(canvas);
+      resizeObserver.observe(canvas);
+    }
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', updateOpacity, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
@@ -354,6 +384,8 @@
 
     return () => {
       stop();
+      intersection.disconnect();
+      resizeObserver.disconnect();
       window.removeEventListener('resize', resize);
       window.removeEventListener('scroll', updateOpacity);
       document.removeEventListener('visibilitychange', onVisibility);
@@ -362,7 +394,7 @@
   });
 </script>
 
-<canvas bind:this={canvas} aria-hidden="true"></canvas>
+<canvas bind:this={canvas} class:contained aria-hidden="true"></canvas>
 
 <style>
   canvas {
@@ -373,6 +405,9 @@
     z-index: -1;
     pointer-events: none;
     animation: circuit-in 2s ease-out both;
+  }
+  canvas.contained {
+    position: absolute;
   }
   @keyframes circuit-in {
     from {

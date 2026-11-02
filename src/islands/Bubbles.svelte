@@ -3,6 +3,7 @@
   // pushes them aside and drags them along its movement, like moving through water.
   // Fixed to the viewport, so its cost does not grow with the page. Pauses while the tab is hidden and draws
   // one still frame under reduced motion.
+  // With `contained` it fills its positioned parent instead of the viewport (project cards on the home page).
   // To remove it: delete the <Bubbles> line (and its import) in ShowcaseProject.astro, then this file.
   import { onMount } from 'svelte';
 
@@ -18,11 +19,14 @@
   }
 
   const BUBBLE_DENSITY = 1 / 32000; // bubbles per CSS pixel
+  const CARD_DENSITY = 1 / 4500; // denser in a small card, so it is not nearly empty
+  const CARD_BRIGHTNESS = 1.3; // alpha multiplier in a card
   const REACH = 150; // pointer influence radius, px
   const DRAG = 0.5; // share of the pointer velocity handed to bubbles at its center
   const PUSH = 700; // outward acceleration at the pointer, px per second squared
   const DAMPING = 1.6; // how fast pointer-induced velocity fades, per second
 
+  let { contained = false }: { contained?: boolean } = $props();
   let canvas: HTMLCanvasElement;
 
   onMount(() => {
@@ -37,6 +41,7 @@
     let height = 0;
     let raf = 0;
     let last = 0;
+    let visible = true; // false while a contained canvas is scrolled off screen
     // Pointer position and smoothed velocity (px per second); inactive until it moves over the page.
     let pointer = { x: 0, y: 0, vx: 0, vy: 0, active: false };
     let pointerTime = 0;
@@ -57,12 +62,13 @@
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.round(width * height * BUBBLE_DENSITY);
+      const count = Math.round(width * height * (contained ? CARD_DENSITY : BUBBLE_DENSITY));
       if (bubbles.length > count) bubbles.length = count;
       while (bubbles.length < count) bubbles.push(spawn(true));
       draw(performance.now());
@@ -75,14 +81,14 @@
       for (const b of bubbles) {
         const x = b.x + Math.sin(time / 1400 + b.phase) * b.wobble;
         // Bigger bubbles are nearer: a little brighter.
-        const alpha = 0.12 + b.r * 0.035;
+        const alpha = Math.min(1, (0.12 + b.r * 0.035) * (contained ? CARD_BRIGHTNESS : 1));
         ctx!.globalAlpha = alpha;
         ctx!.lineWidth = 1;
         ctx!.beginPath();
         ctx!.arc(x, b.y, b.r, 0, Math.PI * 2);
         ctx!.stroke();
         // Small highlight on the upper left.
-        ctx!.globalAlpha = alpha * 1.6;
+        ctx!.globalAlpha = Math.min(1, alpha * 1.6);
         ctx!.beginPath();
         ctx!.arc(x - b.r * 0.35, b.y - b.r * 0.35, Math.max(b.r * 0.18, 0.4), 0, Math.PI * 2);
         ctx!.fill();
@@ -122,7 +128,7 @@
     }
 
     function start() {
-      if (raf || reducedMotion.matches || document.hidden) return;
+      if (raf || reducedMotion.matches || document.hidden || !visible) return;
       last = performance.now();
       raf = requestAnimationFrame(frame);
     }
@@ -134,14 +140,16 @@
 
     function onPointerMove(event: PointerEvent) {
       const now = performance.now();
+      const rect0 = canvas.getBoundingClientRect();
       const dt = Math.max((now - pointerTime) / 1000, 0.008);
       if (pointer.active) {
         // Smooth the raw velocity so one jumpy event does not fling bubbles.
-        pointer.vx += ((event.clientX - pointer.x) / dt - pointer.vx) * 0.3;
-        pointer.vy += ((event.clientY - pointer.y) / dt - pointer.vy) * 0.3;
+        pointer.vx += ((event.clientX - rect0.left - pointer.x) / dt - pointer.vx) * 0.3;
+        pointer.vy += ((event.clientY - rect0.top - pointer.y) / dt - pointer.vy) * 0.3;
       }
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
       pointer.active = true;
       pointerTime = now;
     }
@@ -165,6 +173,15 @@
 
     resize();
     start();
+    // A card can scroll off screen: stop drawing then.
+    const intersection = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+      else stop();
+    });
+    if (contained) intersection.observe(canvas);
+    const resizeObserver = new ResizeObserver(resize);
+    if (contained) resizeObserver.observe(canvas);
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     document.documentElement.addEventListener('pointerleave', onPointerLeave);
@@ -173,6 +190,8 @@
 
     return () => {
       stop();
+      intersection.disconnect();
+      resizeObserver.disconnect();
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
       document.documentElement.removeEventListener('pointerleave', onPointerLeave);
@@ -182,7 +201,7 @@
   });
 </script>
 
-<canvas bind:this={canvas} aria-hidden="true"></canvas>
+<canvas bind:this={canvas} class:contained aria-hidden="true"></canvas>
 
 <style>
   canvas {
@@ -192,5 +211,8 @@
     height: 100%;
     z-index: -1;
     pointer-events: none;
+  }
+  canvas.contained {
+    position: absolute;
   }
 </style>

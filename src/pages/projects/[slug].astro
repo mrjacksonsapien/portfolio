@@ -6,7 +6,7 @@ import GithubIcon from '../../components/GithubIcon.astro';
 import ShowcaseProject from '../../components/ShowcaseProject.astro';
 import SglDemo from '../../islands/SglDemo.svelte';
 import SglStage from '../../islands/SglStage.svelte';
-import SglPipeline from '../../islands/SglPipeline.svelte';
+import ProjectBackground from '../../components/ProjectBackground.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => !data.draft);
@@ -48,7 +48,7 @@ const { Content } = await render(project);
           <div class="story">
             {project.data.demo === 'sgl' && (
               <div class="story__bg" aria-hidden="true">
-                <SglPipeline client:visible />
+                <ProjectBackground kind="sgl" />
               </div>
             )}
             {project.data.story.map((step, i) => (

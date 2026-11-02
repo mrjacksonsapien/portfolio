@@ -1,0 +1,30 @@
+---
+// The decorative canvas of a project, shared by the project page and its card on the home page. Without `contained`
+// it is fixed behind the page (SGL: sticky, see [slug].astro); with it, it fills the nearest positioned parent.
+import Bubbles from '../islands/Bubbles.svelte';
+import CircuitBackground from '../islands/CircuitBackground.svelte';
+import SglPipeline from '../islands/SglPipeline.svelte';
+
+interface Props {
+  kind: 'sgl' | 'bubbles' | 'circuit';
+  contained?: boolean;
+}
+
+const { kind, contained = false } = Astro.props;
+---
+
+{
+  contained ? (
+    <>
+      {kind === 'bubbles' && <Bubbles client:visible contained />}
+      {kind === 'circuit' && <CircuitBackground client:visible contained />}
+      {kind === 'sgl' && <SglPipeline client:visible zoom={0.5} boost={1.375} dense />}
+    </>
+  ) : (
+    <>
+      {kind === 'bubbles' && <Bubbles client:idle />}
+      {kind === 'circuit' && <CircuitBackground client:idle />}
+      {kind === 'sgl' && <SglPipeline client:visible />}
+    </>
+  )
+}

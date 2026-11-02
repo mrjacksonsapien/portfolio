@@ -1,6 +1,7 @@
 ---
 import GithubIcon from './GithubIcon.astro';
 import RobloxIcon from './RobloxIcon.astro';
+import ProjectBackground from './ProjectBackground.astro';
 
 interface Props {
   id: string;
@@ -11,12 +12,19 @@ interface Props {
   repoUrl?: string;
   robloxUrl?: string;
   index?: number;
+  layout?: string;
+  background?: string;
+  demo?: string;
 }
 
-const { id, title, summary, year, tags, repoUrl, robloxUrl, index = 0 } = Astro.props;
+const { id, title, summary, year, tags, repoUrl, robloxUrl, index = 0, layout, background, demo } = Astro.props;
+
+// The same canvas as the project page, if it has one.
+const backdrop = demo === 'sgl' ? 'sgl' : layout === 'showcase' ? (background === 'circuit' ? 'circuit' : 'bubbles') : undefined;
 ---
 
 <article class="card rise" style={`--d:${0.8 + index * 0.12}s`}>
+  {backdrop && <div class="card__bg" aria-hidden="true"><ProjectBackground kind={backdrop} contained /></div>}
   <span class="meta">{year}</span>
   <h3 class="card__title"><a class="card__link" href={`/projects/${id}`}>{title}</a></h3>
   <p class="card__summary">{summary}</p>
@@ -40,6 +48,8 @@ const { id, title, summary, year, tags, repoUrl, robloxUrl, index = 0 } = Astro.
 <style>
   .card {
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -50,6 +60,12 @@ const { id, title, summary, year, tags, repoUrl, robloxUrl, index = 0 } = Astro.
   .card:hover,
   .card:focus-within {
     border-color: var(--color-fg);
+  }
+  .card__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
   }
   .card__link {
     color: inherit;

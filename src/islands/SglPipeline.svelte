@@ -48,6 +48,12 @@
   const fmt = (n: number) => String(Number(n.toFixed(Math.abs(n) >= 100 ? 0 : 2)));
   const vecText = (v: Vec4) => `[${v.map(fmt).join(' ')}]`;
 
+  // For cards: `zoom` shrinks the drawing, `boost` brightens it and `dense` packs the rows and the packets closer, so
+  // more functions and matrices are on screen at once.
+  let { zoom = 1, boost = 1, dense = false }: { zoom?: number; boost?: number; dense?: boolean } = $props();
+  const rowGap = dense ? ROW_GAP * 0.6 : ROW_GAP;
+  const packetSpacing = dense ? PACKET_SPACING * 0.45 : PACKET_SPACING;
+  const A = ALPHA * boost;
   let canvas: HTMLCanvasElement;
 
   onMount(() => {
@@ -71,14 +77,14 @@
 
     function layout() {
       const perRow = Math.max(1, Math.floor((width + COL_GAP) / (BOX_W + COL_GAP)));
-      const rows = Math.ceil(height / ROW_GAP) + 1;
+      const rows = Math.ceil(height / rowGap) + 1;
       const rowWidth = perRow * BOX_W + (perRow - 1) * COL_GAP;
       const left = (width - rowWidth) / 2;
       nodes = [];
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < perRow; c++) {
           const col = r % 2 ? perRow - 1 - c : c; // snake path
-          nodes.push({ x: left + col * (BOX_W + COL_GAP) + BOX_W / 2, y: 40 + r * ROW_GAP, stage: nodes.length % stages.length });
+          nodes.push({ x: left + col * (BOX_W + COL_GAP) + BOX_W / 2, y: 40 + r * rowGap, stage: nodes.length % stages.length });
         }
       }
       lengths = nodes.map((n, i) => {
@@ -91,11 +97,11 @@
     function resize() {
       const rect = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = rect.width;
-      height = rect.height;
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      width = rect.width / zoom;
+      height = rect.height / zoom;
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx!.setTransform(dpr * zoom, 0, 0, dpr * zoom, 0, 0);
       layout();
       draw(performance.now());
     }
@@ -141,7 +147,7 @@
       const t = reducedMotion ? 6 : (now - start) / 1000;
 
       // Arrows between consecutive boxes.
-      g.globalAlpha = ALPHA * 0.8;
+      g.globalAlpha = A * 0.8;
       nodes.forEach((a, i) => {
         const b = nodes[(i + 1) % nodes.length];
         if (b === nodes[0]) return;
@@ -163,7 +169,7 @@
       // Packets: where one is, the box ahead of it lights up and, for matrix stages, the matrix appears.
       const lit = new Map<number, number>();
       const packets: { x: number; y: number; stage: number }[] = [];
-      const count = Math.max(1, Math.floor(total / PACKET_SPACING));
+      const count = Math.max(1, Math.floor(total / packetSpacing));
       for (let k = 0; k < count; k++) {
         const pos = pointAt(t * SPEED + k * (total / count));
         const next = (pos.from + 1) % nodes.length;
@@ -181,20 +187,20 @@
         g.font = `10px ${font}`;
         g.textAlign = 'center';
         const glow = lit.get(i) ?? 0;
-        g.globalAlpha = ALPHA + glow * 0.12;
+        g.globalAlpha = A + glow * 0.12;
         g.strokeRect(n.x - BOX_W / 2, n.y - BOX_H / 2, BOX_W, BOX_H);
         g.fillText(stages[n.stage].fn, n.x, n.y);
         const s = stages[n.stage];
         if (s.matrix && glow > 0.05) {
           const side = n.x < width / 2 ? 1 : -1;
           const mx = side > 0 ? n.x + BOX_W / 2 + 14 : n.x - BOX_W / 2 - 14 - 140;
-          drawMatrix(s.matrix, `${s.name} matrix`, mx, n.y - 22, ALPHA * 1.4 * glow);
+          drawMatrix(s.matrix, `${s.name} matrix`, mx, n.y - 22, A * 1.4 * glow);
         }
       });
 
       // Packets on top.
       packets.forEach((p) => {
-        g.globalAlpha = ALPHA * 2.2;
+        g.globalAlpha = A * 2.2;
         g.beginPath();
         g.arc(p.x, p.y, 3, 0, Math.PI * 2);
         g.fill();

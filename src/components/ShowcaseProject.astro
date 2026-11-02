@@ -8,8 +8,7 @@ import RobloxIcon from './RobloxIcon.astro';
 import GithubIcon from './GithubIcon.astro';
 import Photo from './Photo.astro';
 import VideoEmbed from './VideoEmbed.astro';
-import Bubbles from '../islands/Bubbles.svelte';
-import CircuitBackground from '../islands/CircuitBackground.svelte';
+import ProjectBackground from './ProjectBackground.astro';
 import Lightbox from '../islands/Lightbox.svelte';
 import Stage from '../islands/Stage.svelte';
 
@@ -34,7 +33,7 @@ let photoCount = 0;
 const nextTilt = () => tilts[photoCount++ % tilts.length];
 ---
 
-{data.background === 'circuit' ? <CircuitBackground client:idle /> : <Bubbles client:idle />}
+<ProjectBackground kind={data.background === 'circuit' ? 'circuit' : 'bubbles'} />
 {
   data.banner && (
     <div class="banner" aria-hidden="true">
