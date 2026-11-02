@@ -54,12 +54,17 @@ Each one is a separate, self-contained island that can be removed on its own. Re
 | `Starfield.svelte` | Hero | Slowly drifting, twinkling stars. | `src/components/Hero.astro` |
 | `SilkWaves.svelte` | Hero, over the starfield | PS3-boot-screen style flowing ribbons: layered translucent filled white ribbons with a faint wireframe mesh overlay that pinch and swell, fading out at both ends. | `src/components/Hero.astro` |
 | `SglPipeline.svelte` | SGL project page, behind the story steps | Faint flow of function boxes, arrows, vertex packets and the real matrices applied to them, like a trace of the rendering pipeline. Stays fixed while scrolling. | `src/pages/projects/[slug].astro` |
+| `Bubbles.svelte` | Aquamania page (showcase layout), fixed behind the page | Small white bubbles rising with a slight wobble. The pointer pushes them aside and drags them along. | `src/components/ShowcaseProject.astro` |
 | `BitGrid.svelte` | About page | Faint grid of `0`/`1` in the mono font where random bits flip constantly and briefly light up, like a view of memory. | `src/pages/about.astro` |
 
 Notes:
 
 - The about page has no starfield on purpose; the bit grid is its only background.
 - The bit grid stays very dim at rest (about 4% opacity) so the text stands out. The `--bitgrid-extend` custom property on the wrapper in `about.astro` makes the grid grow past the page into the footer's top margin, so it reaches the footer without moving it. The wrapper's `min-height: 70dvh` sets where the footer sits; keep it.
+
+## Showcase pages
+
+Project pages with `layout: showcase` are the one place where color is allowed, and only through the project's own screenshots: a full-bleed banner fading to black, then tilted screenshots (a slight rotation that straightens on hover, opening a full-screen viewer on click). The UI around them stays black and white as everywhere else.
 
 ## Rules
 

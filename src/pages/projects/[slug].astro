@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import GithubIcon from '../../components/GithubIcon.astro';
+import ShowcaseProject from '../../components/ShowcaseProject.astro';
 import SglDemo from '../../islands/SglDemo.svelte';
 import SglStage from '../../islands/SglStage.svelte';
 import SglPipeline from '../../islands/SglPipeline.svelte';
@@ -17,61 +18,67 @@ const { Content } = await render(project);
 ---
 
 <BaseLayout title={project.data.title} description={project.data.summary}>
-  <article class="container project">
-    <div class="project__inner">
-      <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title}>
-        {
-          project.data.repoUrl && (
-            <a class="repo-link fade" style="--d:0.6s" href={project.data.repoUrl} aria-label={`${project.data.title} on GitHub`} target="_blank" rel="noopener noreferrer">
-              <GithubIcon size={28} />
-            </a>
-          )
-        }
-        {
-          project.data.repoUrl && (
-            <a slot="subtitle" class="repo-subtitle fade" style="--d:0.6s" href={project.data.repoUrl} target="_blank" rel="noopener noreferrer">
-              {project.data.title} on GitHub →
-            </a>
-          )
-        }
-      </SectionHeading>
-      {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible notes={project.data.demoNotes} /></div>}
-      <div class="rise" style="--d:0.7s"><Content /></div>
-    </div>
-    {
-      project.data.story.length > 0 && (
-        <div class="story">
-          {project.data.demo === 'sgl' && (
-            <div class="story__bg" aria-hidden="true">
-              <SglPipeline client:visible />
-            </div>
-          )}
-          {project.data.story.map((step, i) => (
-            <section class:list={['step', 'reveal', { 'step--flip': i % 2 === 1, 'step--text-only': !step.visual }]}>
-              <div class="step__text">
-                <span class="meta">{String(i + 1).padStart(2, '0')} / {project.data.story.length}</span>
-                <h3 class="display step__title">
-                  {step.title}
-                  {step.link?.href.includes('github.com') && (
-                    <a class="repo-link" href={step.link.href} aria-label={step.link.label} target="_blank" rel="noopener noreferrer">
-                      <GithubIcon size={28} />
-                    </a>
-                  )}
-                </h3>
-                <p>{step.body}</p>
-                {step.link && <a href={step.link.href}>{step.link.label} →</a>}
+  {
+    project.data.layout === 'showcase' ? (
+      <ShowcaseProject project={project} />
+    ) : (
+    <article class="container project">
+      <div class="project__inner">
+        <SectionHeading label={`${project.data.year} / ${project.data.tags.join(' / ')}`} title={project.data.title}>
+          {
+            project.data.repoUrl && (
+              <a class="repo-link fade" style="--d:0.6s" href={project.data.repoUrl} aria-label={`${project.data.title} on GitHub`} target="_blank" rel="noopener noreferrer">
+                <GithubIcon size={28} />
+              </a>
+            )
+          }
+          {
+            project.data.repoUrl && (
+              <a slot="subtitle" class="repo-subtitle fade" style="--d:0.6s" href={project.data.repoUrl} target="_blank" rel="noopener noreferrer">
+                {project.data.title} on GitHub →
+              </a>
+            )
+          }
+        </SectionHeading>
+        {project.data.demo === 'sgl' && <div class="rise" style="--d:0.7s"><SglDemo client:visible notes={project.data.demoNotes} /></div>}
+        <div class="rise" style="--d:0.7s"><Content /></div>
+      </div>
+      {
+        project.data.story.length > 0 && (
+          <div class="story">
+            {project.data.demo === 'sgl' && (
+              <div class="story__bg" aria-hidden="true">
+                <SglPipeline client:visible />
               </div>
-              {step.visual && (
-                <div class="step__visual">
-                  <SglStage client:visible kind={step.visual} label={step.visualLabel ?? step.title} />
+            )}
+            {project.data.story.map((step, i) => (
+              <section class:list={['step', 'reveal', { 'step--flip': i % 2 === 1, 'step--text-only': !step.visual }]}>
+                <div class="step__text">
+                  <span class="meta">{String(i + 1).padStart(2, '0')} / {project.data.story.length}</span>
+                  <h3 class="display step__title">
+                    {step.title}
+                    {step.link?.href.includes('github.com') && (
+                      <a class="repo-link" href={step.link.href} aria-label={step.link.label} target="_blank" rel="noopener noreferrer">
+                        <GithubIcon size={28} />
+                      </a>
+                    )}
+                  </h3>
+                  <p>{step.body}</p>
+                  {step.link && <a href={step.link.href}>{step.link.label} →</a>}
                 </div>
-              )}
-            </section>
-          ))}
-        </div>
-      )
-    }
-  </article>
+                {step.visual && (
+                  <div class="step__visual">
+                    <SglStage client:visible kind={step.visual} label={step.visualLabel ?? step.title} />
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
+        )
+      }
+    </article>
+    )
+  }
 </BaseLayout>
 
 <style>

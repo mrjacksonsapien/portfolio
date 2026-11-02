@@ -1,0 +1,212 @@
+---
+// Project page for `layout: showcase` (see content.md): full-bleed banner fading to black, the title, then a story of
+// text next to tilted screenshots and small animations, and a gallery. Bubbles drift up behind everything.
+import { render, type CollectionEntry } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+import RobloxIcon from './RobloxIcon.astro';
+import Photo from './Photo.astro';
+import Bubbles from '../islands/Bubbles.svelte';
+import Lightbox from '../islands/Lightbox.svelte';
+import AquaStage from '../islands/AquaStage.svelte';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+
+// Tilts alternate so neighbours lean opposite ways.
+const tilts = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.3];
+let photoCount = 0;
+const nextTilt = () => tilts[photoCount++ % tilts.length];
+---
+
+<Bubbles client:idle />
+{
+  data.banner && (
+    <div class="banner" aria-hidden="true">
+      <img src={data.banner} alt="" width="1920" height="1080" fetchpriority="high" />
+    </div>
+  )
+}
+<article class="container showcase">
+  <div class="showcase__inner">
+    <SectionHeading label={`${data.year} / ${data.tags.join(' / ')}`} title={data.title}>
+      {
+        data.robloxUrl && (
+          <a class="icon-link fade" style="--d:0.6s" href={data.robloxUrl} aria-label={`${data.title} on Roblox`} target="_blank" rel="noopener noreferrer">
+            <RobloxIcon size={28} />
+          </a>
+        )
+      }
+      {
+        data.robloxUrl && (
+          <a slot="subtitle" class="icon-subtitle fade" style="--d:0.6s" href={data.robloxUrl} target="_blank" rel="noopener noreferrer">
+            {data.title} on Roblox →
+          </a>
+        )
+      }
+    </SectionHeading>
+    <div class="intro rise" style="--d:0.7s"><Content /></div>
+  </div>
+
+  {
+    data.story.map((step, i) => (
+      <section class:list={['step', 'reveal', { 'step--flip': i % 2 === 1 }]}>
+        <div class="step__text">
+          <span class="meta">{String(i + 1).padStart(2, '0')} / {data.story.length}</span>
+          <h3 class="display step__title">
+            {step.title}
+            {step.link && step.link.href === data.robloxUrl && (
+              <a class="icon-link" href={step.link.href} aria-label={step.link.label} target="_blank" rel="noopener noreferrer">
+                <RobloxIcon size={28} />
+              </a>
+            )}
+          </h3>
+          <p>{step.body}</p>
+          {step.link && <a href={step.link.href} target="_blank" rel="noopener noreferrer">{step.link.label} →</a>}
+        </div>
+        {(step.animation || step.images.length > 0) && (
+          <div class="step__visual">
+            {step.animation && <AquaStage client:visible kind={step.animation} label={step.visualLabel ?? step.title} />}
+            {step.images.map((image) => <Photo {...image} tilt={nextTilt()} />)}
+          </div>
+        )}
+      </section>
+    ))
+  }
+
+  {
+    data.gallery.length > 0 && (
+      <section class="gallery reveal">
+        <span class="meta">Gallery</span>
+        <h3 class="display step__title">More from the dive</h3>
+        <div class="gallery__grid">
+          {data.gallery.map((image) => <Photo {...image} tilt={nextTilt()} />)}
+        </div>
+      </section>
+    )
+  }
+</article>
+<Lightbox client:idle />
+
+<style>
+  /* Starts under the sticky navbar (about its height) and fades to black right where the title begins. */
+  .banner {
+    position: relative;
+    height: clamp(20rem, 70dvh, 46rem);
+    margin-top: -3.5rem;
+    margin-bottom: calc(var(--space-5) * -1);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
+    pointer-events: none;
+  }
+  .banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    animation: banner-in 2.4s ease-out both;
+  }
+  @keyframes banner-in {
+    from {
+      opacity: 0;
+      scale: 1.06;
+    }
+  }
+  .showcase {
+    position: relative;
+  }
+  .showcase__inner {
+    max-width: 48rem;
+  }
+  .intro :global(p) {
+    margin: 0 0 var(--space-2);
+    color: var(--color-fg-muted);
+  }
+  .icon-link {
+    display: inline-flex;
+    color: var(--color-fg-muted);
+    transition: color 0.2s;
+  }
+  .icon-link:hover,
+  .icon-link:focus-visible {
+    color: var(--color-fg);
+  }
+  .icon-subtitle {
+    align-self: flex-start;
+  }
+  .step__title .icon-link {
+    margin-left: var(--space-1);
+    vertical-align: middle;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 30rem);
+    align-items: center;
+    gap: var(--space-5);
+    padding-block: var(--space-5);
+  }
+  .step--flip {
+    grid-template-columns: minmax(16rem, 30rem) minmax(0, 1fr);
+  }
+  .step--flip .step__text {
+    order: 2;
+  }
+  .step__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: 36rem;
+  }
+  .step__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  .step__text p {
+    margin: 0;
+    font-size: var(--text-md);
+  }
+  .step__text a:not(.icon-link) {
+    align-self: flex-start;
+  }
+  .step__visual {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-2);
+  }
+  /* Stacked pictures sit off-centre so they overlap the column edge a little. */
+  .step__visual > :global(.photo:nth-child(even)) {
+    margin-left: var(--space-4);
+    margin-right: calc(var(--space-2) * -1);
+  }
+  .step--flip .step__visual > :global(.photo:nth-child(even)) {
+    margin-left: calc(var(--space-2) * -1);
+    margin-right: var(--space-4);
+  }
+  .gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-5);
+  }
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: var(--space-4) var(--space-3);
+    margin-top: var(--space-3);
+    padding: var(--space-2);
+  }
+  @media (max-width: 52rem) {
+    .step,
+    .step--flip {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
+      padding-block: var(--space-4);
+    }
+    .step--flip .step__text {
+      order: 0;
+    }
+  }
+</style>

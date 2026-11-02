@@ -16,6 +16,9 @@ order: 1            # lower comes first (optional, default 0)
 cover: /images/x.png  # optional, file in public/
 repoUrl: https://...  # optional, shows a GitHub icon on the home card and next to the project title
 liveUrl: https://...  # optional
+robloxUrl: https://...  # optional, shows a Roblox icon instead of the GitHub one
+layout: showcase      # optional, picture-led page (see architecture.md); default is the standard page
+banner: /images/x/header-1920.webp   # showcase only: full-bleed top image fading to black
 demo: sgl             # optional, embeds an interactive island (allowed values in content.config.ts)
 demoNotes:            # optional, shown in the demo's info popover
   - Plain text note.
@@ -25,6 +28,10 @@ story:                # optional illustrated walkthrough, one zigzag row per ste
     visual: mesh        # optional: mesh | transform | culling | projection | clipping | raster
     visualLabel: Accessible description of the animation.
     link: { label: Text, href: https://... }   # optional
+gallery:              # showcase only: pictures after the story, all open in the lightbox
+  - src: /images/x/name     # no size suffix or extension: resolves to name-960.webp and name-1920.webp
+    alt: Accessible description.
+    caption: Shown in the lightbox.   # optional
 draft: false          # true hides it everywhere
 ---
 
@@ -32,6 +39,8 @@ Markdown body shown on the project page.
 ```
 
 `story` steps alternate text left / visual right, then the reverse. A step without `visual` is text only. The visuals are SGL-specific (see `architecture.md`).
+
+On a `showcase` project a step can instead have `images` (a list of `src`/`alt`/`caption`) and/or `animation: regions | serializer` (labelled by `visualLabel`). Steps alternate sides the same way.
 
 The home grid, the navbar dropdown and the project page all read this collection.
 
@@ -41,4 +50,4 @@ Shared site content (name, description, headline, intro, about text, social link
 
 ## Media
 
-Put images and other static media in `public/` (served as-is) and reference them by absolute path (`/images/x.png`).
+Put images and other static media in `public/` (served as-is) and reference them by absolute path (`/images/x.png`). Screenshots are stored as resized WebP (see `architecture.md`, showcase pages), never as the original PNGs.

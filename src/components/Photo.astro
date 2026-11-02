@@ -1,0 +1,41 @@
+---
+// A slightly tilted screenshot. It links to the large version; the Lightbox island turns the click into a viewer
+// (without JavaScript the link just opens the image). `src` has no size suffix or extension, see content.config.ts.
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  tilt?: number;
+}
+
+const { src, alt, caption, tilt = 0 } = Astro.props;
+---
+
+<a class="photo" href={`${src}-1920.webp`} data-lightbox data-caption={caption} style={`--tilt:${tilt}deg`}>
+  <img src={`${src}-960.webp`} {alt} width="960" height="540" loading="lazy" decoding="async" />
+</a>
+
+<style>
+  .photo {
+    display: block;
+    rotate: var(--tilt);
+    border: 1px solid var(--color-line);
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.6);
+    transition:
+      rotate 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      scale 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.2s;
+    cursor: zoom-in;
+  }
+  .photo:hover,
+  .photo:focus-visible {
+    rotate: 0deg;
+    scale: 1.025;
+    border-color: var(--color-fg-muted);
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

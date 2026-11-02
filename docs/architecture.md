@@ -26,8 +26,8 @@ Small behaviors that need no framework can use a plain `<script>` in an `.astro`
 src/
   pages/            index.astro, about.astro, projects/[slug].astro
   layouts/          BaseLayout.astro (html shell, navbar, footer)
-  components/       Navbar, Footer, Hero, SectionHeading, ProjectCard (static)
-  islands/          Starfield.svelte (hero), SilkWaves.svelte (hero), BitGrid.svelte (about), all client:idle; SglDemo.svelte (SGL project page), client:visible
+  components/       Navbar, Footer, Hero, SectionHeading, ProjectCard, ShowcaseProject, Photo (static)
+  islands/          Starfield.svelte (hero), SilkWaves.svelte (hero), BitGrid.svelte (about), all client:idle; SglDemo.svelte (SGL project page), client:visible; Bubbles, Lightbox (client:idle) and AquaStage (client:visible) on the Aquamania page
   content/          projects/*.md (see content.md)
   content.config.ts collection schemas
   styles/           tokens.css, global.css
@@ -38,7 +38,7 @@ public/             files served as-is
 
 - Navbar (in `BaseLayout`): **Home**, **Projects** (dropdown listing every non-draft project), **About me**. The dropdown opens on hover and focus-within (CSS), plus a small inline script for touch (tap toggles `data-open`, outside click and Escape close it).
 - Home (`/`): hero and an overview grid of projects.
-- Project page (`/projects/<slug>`): generated from the content collection. A project can opt into an interactive island with the `demo` frontmatter field (see `content.md`); `[slug].astro` maps the value to its island.
+- Project page (`/projects/<slug>`): generated from the content collection. A project can opt into an interactive island with the `demo` frontmatter field (see `content.md`); `[slug].astro` maps the value to its island. A project with `layout: showcase` is rendered by `ShowcaseProject.astro` instead (see below).
 - About (`/about`): presentation page.
 
 ## Build
@@ -70,3 +70,13 @@ On a project with `story` steps, `[slug].astro` renders one row per step: text p
 - `src/islands/sgl-stages.ts`: the drawing code, one function per `kind` (`mesh`, `transform`, `culling`, `projection`, `clipping`, `raster`). Pure functions of time, drawn in the foreground color at varying opacity. To add a stage: add a function, register it in `stages` and `stillTime`, and add the name to the enum in `content.config.ts`.
 - `src/islands/SglPipeline.svelte`: decorative background behind the steps (function boxes, arrows, vertex packets and the matrices applied to them). Sticky and viewport-sized, so its cost does not grow with the page. Remove by deleting it from `[slug].astro`.
 - `.reveal` (in `motion.css`) makes each step rise as it scrolls into view where scroll-driven animations are supported.
+
+## Showcase project pages
+
+`layout: showcase` in a project's frontmatter switches `[slug].astro` to `src/components/ShowcaseProject.astro`, a picture-led page (used by Aquamania): a full-bleed `banner` that fades to black right where the title starts, then the title with a Roblox link, the Markdown body, one zigzag row per `story` step (text next to tilted screenshots and/or a small animation) and a `gallery`.
+
+- `Photo.astro`: a tilted screenshot (`rotate` via the `--tilt` custom property, straightens on hover). It is a link to the large image, so it still works without JavaScript.
+- `src/islands/Lightbox.svelte` (`client:idle`): one per page. It listens for clicks on any `a[data-lightbox]`, collects them in document order and opens a `<dialog>` viewer with arrows, keyboard (arrows, Home, End, Escape), swipe and a thumbnail carousel at the bottom. The banner is decorative and not part of it. It reads `href` (large image), the inner `<img>` (thumbnail), its `alt` and `data-caption` from the DOM, so a new `Photo` joins the carousel automatically.
+- `src/islands/Bubbles.svelte` (`client:idle`): fixed, viewport-sized canvas behind the page. Small bubbles rise and wobble; the pointer pushes them aside and drags them along its movement. Constants at the top tune the density and the pointer feel. Remove by deleting it from `ShowcaseProject.astro`.
+- `src/islands/AquaStage.svelte` + `aqua-stages.ts`: same idea as `SglStage`/`sgl-stages.ts` (one canvas, drawing in a pure function of time, pauses off screen, still frame under reduced motion) for the kinds `regions` and `serializer`. To add one: add a function, register it in `stages` and `stillTime`, and add the name to the `animation` enum in `content.config.ts`.
+- Pictures are in `public/images/<project>/` as `<name>-960.webp` (page and carousel) and `<name>-1920.webp` (viewer). Content references them without suffix (`/images/aquamania/sunken-pier`). Convert new screenshots with `sharp` (resize to 960, quality about 78 for the small one; 1920, quality about 82 for the large one).

@@ -1,5 +1,6 @@
 ---
 import GithubIcon from './GithubIcon.astro';
+import RobloxIcon from './RobloxIcon.astro';
 
 interface Props {
   id: string;
@@ -8,10 +9,11 @@ interface Props {
   year: number;
   tags: string[];
   repoUrl?: string;
+  robloxUrl?: string;
   index?: number;
 }
 
-const { id, title, summary, year, tags, repoUrl, index = 0 } = Astro.props;
+const { id, title, summary, year, tags, repoUrl, robloxUrl, index = 0 } = Astro.props;
 ---
 
 <article class="card rise" style={`--d:${0.8 + index * 0.12}s`}>
@@ -23,6 +25,13 @@ const { id, title, summary, year, tags, repoUrl, index = 0 } = Astro.props;
     repoUrl && (
       <a class="card__repo fade" style={`--d:${1 + index * 0.12}s`} href={repoUrl} aria-label={`${title} on GitHub`} target="_blank" rel="noopener noreferrer">
         <GithubIcon />
+      </a>
+    )
+  }
+  {
+    robloxUrl && (
+      <a class="card__repo fade" style={`--d:${1 + index * 0.12}s`} href={robloxUrl} aria-label={`${title} on Roblox`} target="_blank" rel="noopener noreferrer">
+        <RobloxIcon />
       </a>
     )
   }

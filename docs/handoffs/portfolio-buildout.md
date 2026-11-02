@@ -20,7 +20,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 - [ ] Design and implement the interactive islands on project pages (`src/pages/projects/[slug].astro`). Discuss with the user what each project needs first.
 - [x] Site content (name, headline, intro, about, social links) is set in `src/data/site.ts`. The navbar has GitHub and LinkedIn icons.
 - [ ] Project 1 (SGL) is on `develop`: live demo island (`SglDemo`), illustrated story (`SglStage`, `sgl-stages.ts`) and pipeline background (`SglPipeline`); see `docs/architecture.md`. None of it has been checked by an agent in a browser, only by the user. The same approach (frontmatter `story`, one island per visual) can be reused for projects 2 and 3.
-- [ ] The user adds the real projects in `src/content/projects/`. Project 1 is done: `sgl.md` with the live `SglDemo` island (not yet checked in a browser; the text about learning linear algebra is generic and needs the user's real story). `project-2.md` and `project-3.md` are still placeholders.
+- [ ] The user adds the real projects in `src/content/projects/`. Project 1 is done: `sgl.md` with the live `SglDemo` island (not yet checked in a browser; the text about learning linear algebra is generic and needs the user's real story). Project 2 (Aquamania) is on `develop` as `aquamania.md` with the `showcase` layout (see `docs/architecture.md`); not yet checked in a browser by an agent, and its text was expanded from the user's notes so it needs their review (year is set to 2026 as a guess). `project-3.md` is still a placeholder.
 - [x] Added `public/favicon.svg`, theme-color and basic Open Graph tags (`lang` was already set).
 - [ ] Still missing metadata: a social preview image (`og:image`, needs a design) and a sitemap (needs `site` in `astro.config.mjs`, so the final domain first).
 - [x] Mobile navigation: tap toggle added in `Navbar.astro`. Not yet tested on a real touch device. Known quirk: on desktop, closing by clicking the toggle while it keeps focus leaves the menu visible through `:focus-within`.
@@ -38,7 +38,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 
 ## Open questions
 
-- What should projects 2 and 3 be, and what visuals or interactions do they need? (Project 1 is done.)
+- What should project 3 be, and what visuals or interactions does it need? (Projects 1 and 2 are done; the user will request interactive elements for Aquamania later.)
 
 ## Pointers
 
