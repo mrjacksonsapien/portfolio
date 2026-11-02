@@ -6,13 +6,15 @@ interface Props {
   alt: string;
   caption?: string;
   tilt?: number;
+  orientation?: 'landscape' | 'portrait';
 }
 
-const { src, alt, caption, tilt = 0 } = Astro.props;
+const { src, alt, caption, tilt = 0, orientation = 'landscape' } = Astro.props;
+const portrait = orientation === 'portrait';
 ---
 
-<a class="photo" href={`${src}-1920.webp`} data-lightbox data-caption={caption} style={`--tilt:${tilt}deg`}>
-  <img src={`${src}-960.webp`} {alt} width="960" height="540" loading="lazy" decoding="async" />
+<a class:list={['photo', { 'photo--portrait': portrait }]} href={`${src}-1920.webp`} data-lightbox data-caption={caption} style={`--tilt:${tilt}deg`}>
+  <img src={`${src}-960.webp`} {alt} width={portrait ? 720 : 960} height={portrait ? 960 : 540} loading="lazy" decoding="async" />
 </a>
 
 <style>
@@ -32,6 +34,11 @@ const { src, alt, caption, tilt = 0 } = Astro.props;
     rotate: 0deg;
     scale: 1.025;
     border-color: var(--color-fg-muted);
+  }
+  /* Tall pictures would fill the screen at the column width, so they are narrower and centered. */
+  .photo--portrait {
+    width: min(100%, 18rem);
+    margin-inline: auto;
   }
   img {
     display: block;

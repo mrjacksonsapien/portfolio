@@ -53,6 +53,7 @@ story:
     link:
       label: Play Aquamania on Roblox
       href: https://www.roblox.com/games/17810134766/Aquamania
+galleryTitle: More from the dive
 gallery:
   - src: /images/aquamania/night-dunes
     alt: A diver in a red flowered shirt standing on pale dunes under a starry night sky.

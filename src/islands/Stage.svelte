@@ -1,8 +1,8 @@
 <script lang="ts">
-  // One small looping animation on the Aquamania page (see aqua-stages.ts).
+  // One small looping animation on a showcase page (see stages.ts).
   // Pauses while off screen or the tab is hidden; draws a single still frame under reduced motion.
   import { onMount } from 'svelte';
-  import { stages, stillTime, type StageKind } from './aqua-stages';
+  import { stages, stillTime, type StageKind } from './stages';
 
   let { kind, label }: { kind: StageKind; label: string } = $props();
 
@@ -89,6 +89,7 @@
     display: block;
     width: 100%;
     aspect-ratio: 4 / 3;
+    background: var(--color-bg); /* hides a busy page background behind the drawing */
     outline: 1px solid var(--color-line);
     outline-offset: -1px;
   }

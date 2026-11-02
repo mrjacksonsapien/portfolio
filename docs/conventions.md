@@ -14,6 +14,10 @@
 - Update docs when a change is worth knowing about.
 - Do not load docs into context unless needed.
 
+## Media
+
+Originals in `media-src/<project>/`, optimized files in `public/`. See `media.md`.
+
 ## Handoffs
 
 Unfinished tasks get a handoff in `docs/handoffs/`, removed once the task is done. See `handoffs/README.md`.

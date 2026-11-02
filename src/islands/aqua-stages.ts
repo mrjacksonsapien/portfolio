@@ -1,29 +1,9 @@
-// Drawing code for the small animations on the Aquamania page, one function per kind (see AquaStage.svelte).
+// Drawing code for the small animations on the Aquamania page, one function per kind (see Stage.svelte).
 // Each is a pure function of time `t` (seconds), drawn in the foreground color at varying opacity.
 
-export type StageKind = 'regions' | 'serializer';
+import { smoothstep, lerp, label, type StageArgs } from './stage-kit';
 
-export interface StageArgs {
-  g: CanvasRenderingContext2D;
-  w: number;
-  h: number;
-  t: number;
-  font: string;
-}
-
-const smoothstep = (a: number, b: number, x: number) => {
-  const k = Math.min(Math.max((x - a) / (b - a), 0), 1);
-  return k * k * (3 - 2 * k);
-};
-const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-
-function label(g: CanvasRenderingContext2D, font: string, size: number, text: string, x: number, y: number, alpha: number, align: CanvasTextAlign = 'left') {
-  g.font = `${size}px ${font}`;
-  g.textAlign = align;
-  g.textBaseline = 'middle';
-  g.globalAlpha = alpha;
-  g.fillText(text, x, y);
-}
+export type AquaKind = 'regions' | 'serializer';
 
 // What each region feels like: how bright the water is and how busy the sound is.
 const REGIONS = [
@@ -212,7 +192,7 @@ function serializer({ g, w, h, t, font }: StageArgs) {
   label(g, font, fs, 'no migration written', w / 2, h * 0.93, 0.5 * smoothstep(7, 8, c) * fadeOut, 'center');
 }
 
-export const stages: Record<StageKind, (args: StageArgs) => void> = { regions, serializer };
+export const stages: Record<AquaKind, (args: StageArgs) => void> = { regions, serializer };
 
 /** The moment shown when animation is off (reduced motion): the one where the idea is most readable. */
-export const stillTime: Record<StageKind, number> = { regions: 3.4, serializer: 8 };
+export const stillTime: Record<AquaKind, number> = { regions: 3.4, serializer: 8 };

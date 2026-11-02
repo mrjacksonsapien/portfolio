@@ -1,13 +1,17 @@
 ---
 // Project page for `layout: showcase` (see content.md): full-bleed banner fading to black, the title, then a story of
-// text next to tilted screenshots and small animations, and a gallery. Bubbles drift up behind everything.
+// text next to tilted screenshots, small animations or a video, and a gallery. A decorative canvas (`background`) sits
+// fixed behind everything.
 import { render, type CollectionEntry } from 'astro:content';
 import SectionHeading from './SectionHeading.astro';
 import RobloxIcon from './RobloxIcon.astro';
+import GithubIcon from './GithubIcon.astro';
 import Photo from './Photo.astro';
+import VideoEmbed from './VideoEmbed.astro';
 import Bubbles from '../islands/Bubbles.svelte';
+import CircuitBackground from '../islands/CircuitBackground.svelte';
 import Lightbox from '../islands/Lightbox.svelte';
-import AquaStage from '../islands/AquaStage.svelte';
+import Stage from '../islands/Stage.svelte';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -17,13 +21,20 @@ const { project } = Astro.props;
 const { data } = project;
 const { Content } = await render(project);
 
+// The one outside link of the project, shown next to the title: Roblox for a game, GitHub otherwise.
+const external = data.robloxUrl
+  ? { href: data.robloxUrl, label: `${data.title} on Roblox`, Icon: RobloxIcon }
+  : data.repoUrl
+    ? { href: data.repoUrl, label: `${data.title} on GitHub`, Icon: GithubIcon }
+    : undefined;
+
 // Tilts alternate so neighbours lean opposite ways.
 const tilts = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.3];
 let photoCount = 0;
 const nextTilt = () => tilts[photoCount++ % tilts.length];
 ---
 
-<Bubbles client:idle />
+{data.background === 'circuit' ? <CircuitBackground client:idle /> : <Bubbles client:idle />}
 {
   data.banner && (
     <div class="banner" aria-hidden="true">
@@ -35,16 +46,16 @@ const nextTilt = () => tilts[photoCount++ % tilts.length];
   <div class="showcase__inner">
     <SectionHeading label={`${data.year} / ${data.tags.join(' / ')}`} title={data.title}>
       {
-        data.robloxUrl && (
-          <a class="icon-link fade" style="--d:0.6s" href={data.robloxUrl} aria-label={`${data.title} on Roblox`} target="_blank" rel="noopener noreferrer">
-            <RobloxIcon size={28} />
+        external && (
+          <a class="icon-link fade" style="--d:0.6s" href={external.href} aria-label={external.label} target="_blank" rel="noopener noreferrer">
+            <external.Icon size={28} />
           </a>
         )
       }
       {
-        data.robloxUrl && (
-          <a slot="subtitle" class="icon-subtitle fade" style="--d:0.6s" href={data.robloxUrl} target="_blank" rel="noopener noreferrer">
-            {data.title} on Roblox →
+        external && (
+          <a slot="subtitle" class="icon-subtitle fade" style="--d:0.6s" href={external.href} target="_blank" rel="noopener noreferrer">
+            {external.label} →
           </a>
         )
       }
@@ -59,18 +70,19 @@ const nextTilt = () => tilts[photoCount++ % tilts.length];
           <span class="meta">{String(i + 1).padStart(2, '0')} / {data.story.length}</span>
           <h3 class="display step__title">
             {step.title}
-            {step.link && step.link.href === data.robloxUrl && (
+            {external && step.link && step.link.href === external.href && (
               <a class="icon-link" href={step.link.href} aria-label={step.link.label} target="_blank" rel="noopener noreferrer">
-                <RobloxIcon size={28} />
+                <external.Icon size={28} />
               </a>
             )}
           </h3>
           <p>{step.body}</p>
           {step.link && <a href={step.link.href} target="_blank" rel="noopener noreferrer">{step.link.label} →</a>}
         </div>
-        {(step.animation || step.images.length > 0) && (
+        {(step.animation || step.video || step.images.length > 0) && (
           <div class="step__visual">
-            {step.animation && <AquaStage client:visible kind={step.animation} label={step.visualLabel ?? step.title} />}
+            {step.animation && <Stage client:visible kind={step.animation} label={step.visualLabel ?? step.title} />}
+            {step.video && <VideoEmbed {...step.video} />}
             {step.images.map((image) => <Photo {...image} tilt={nextTilt()} />)}
           </div>
         )}
@@ -82,7 +94,7 @@ const nextTilt = () => tilts[photoCount++ % tilts.length];
     data.gallery.length > 0 && (
       <section class="gallery reveal">
         <span class="meta">Gallery</span>
-        <h3 class="display step__title">More from the dive</h3>
+        <h3 class="display step__title">{data.galleryTitle}</h3>
         <div class="gallery__grid">
           {data.gallery.map((image) => <Photo {...image} tilt={nextTilt()} />)}
         </div>

@@ -55,6 +55,7 @@ Each one is a separate, self-contained island that can be removed on its own. Re
 | `SilkWaves.svelte` | Hero, over the starfield | PS3-boot-screen style flowing ribbons: layered translucent filled white ribbons with a faint wireframe mesh overlay that pinch and swell, fading out at both ends. | `src/components/Hero.astro` |
 | `SglPipeline.svelte` | SGL project page, behind the story steps | Faint flow of function boxes, arrows, vertex packets and the real matrices applied to them, like a trace of the rendering pipeline. Stays fixed while scrolling. | `src/pages/projects/[slug].astro` |
 | `Bubbles.svelte` | Aquamania page (showcase layout), fixed behind the page | Small white bubbles rising with a slight wobble. The pointer pushes them aside and drags them along. | `src/components/ShowcaseProject.astro` |
+| `CircuitBackground.svelte` | Maze game page (showcase layout), fixed behind the page | The project's circuit as white lines on black: ESP32, two 74HC595 shift registers, joystick and an 8x8 LED matrix running the real game. Pulses of current flow along the traces and the matrix is scanned column by column. Drawn at low opacity so text stays readable. | `src/components/ShowcaseProject.astro` |
 | `BitGrid.svelte` | About page | Faint grid of `0`/`1` in the mono font where random bits flip constantly and briefly light up, like a view of memory. | `src/pages/about.astro` |
 
 Notes:
@@ -64,7 +65,7 @@ Notes:
 
 ## Showcase pages
 
-Project pages with `layout: showcase` are the one place where color is allowed, and only through the project's own screenshots: a full-bleed banner fading to black, then tilted screenshots (a slight rotation that straightens on hover, opening a full-screen viewer on click). The UI around them stays black and white as everywhere else.
+Project pages with `layout: showcase` are the one place where color is allowed, and only through the project's own screenshots and photos: a full-bleed banner fading to black, then tilted screenshots (a slight rotation that straightens on hover, opening a full-screen viewer on click). The UI around them stays black and white as everywhere else.
 
 ## Rules
 

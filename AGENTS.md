@@ -33,6 +33,10 @@ Static portfolio built with Astro (islands architecture), hosted on Cloudflare P
 - If a task is not completely done when the session ends, write or update a handoff in `docs/handoffs/` so a new session can continue it. Delete the handoff only when the task is done.
 - Format and lifecycle: `docs/handoffs/README.md`.
 
+## Media
+
+- Originals go in `media-src/<project>/`, never in `docs/` or `public/`. The site serves only optimized files from `public/`. Procedure and folders: `docs/media.md`.
+
 ## Code conventions
 
 - Static by default: use `.astro` components in `src/components/`. Add JavaScript only through an island in `src/islands/`, and always choose the lightest hydration directive (`client:visible` > `client:idle` > `client:load`). See `docs/architecture.md`.
