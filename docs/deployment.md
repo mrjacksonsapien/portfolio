@@ -18,7 +18,7 @@ Hosted on **Cloudflare Workers with static assets** (the current "Create app" fl
 2. Open a pull request `develop` -> `main` (`gh pr create --base main --head develop`).
 3. The user merges it. Cloudflare builds and deploys within about a minute.
 
-Agents never commit to `main` or merge the pull request (see `conventions.md`). Every push to `main` is a production deploy, so `main` changes only through merged PRs.
+Agents never commit to `main`, and never accept, approve or merge a pull request (see `conventions.md`). Every push to `main` is a production deploy, so `main` changes only through merged PRs.
 
 ## Dashboard
 
