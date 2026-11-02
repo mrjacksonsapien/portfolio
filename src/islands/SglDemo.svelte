@@ -2,7 +2,8 @@
   // Live SGL demo. The engine is NOT copied into this repo: it is loaded at runtime from the
   // `main` branch of github.com/mrjacksonsapien/SGL (through jsDelivr, which serves it with the
   // correct module MIME type; raw.githubusercontent.com does not). When SGL's main changes,
-  // this demo follows it (jsDelivr may cache a branch for up to ~12 hours).
+  // this demo follows it (jsDelivr may cache a branch for up to ~12 hours). If the CDN import fails, it falls back
+  // to the snapshot in public/vendor/sgl.js (see docs/architecture.md).
   // The controls mirror the original demo: click to focus (pointer lock), mouse to look,
   // WASD to move, Space / Shift for up / down, Esc to release.
   // The scene (an island, see sgl-island.ts) and two speed-ups for SGL's renderer are ours; the pipeline is SGL's.
@@ -12,6 +13,7 @@
   import type { V3 } from './sgl-shapes';
 
   const SGL_URL = 'https://cdn.jsdelivr.net/gh/mrjacksonsapien/SGL@main/sgl.js';
+  const SGL_FALLBACK_URL = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/vendor/sgl.js`;
   const MOVE_SPEED = 6; // world units per second
   const DETAIL = DETAILS.low; // DETAILS.high for the 7,600-triangle version
   const LOOK_SENSITIVITY = 0.15; // degrees per pixel of mouse movement
@@ -55,8 +57,12 @@
       try {
         sgl = await import(/* @vite-ignore */ SGL_URL);
       } catch {
-        if (!disposed) status = 'error';
-        return;
+        try {
+          sgl = await import(/* @vite-ignore */ SGL_FALLBACK_URL);
+        } catch {
+          if (!disposed) status = 'error';
+          return;
+        }
       }
       if (disposed) return;
 
