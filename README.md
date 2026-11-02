@@ -1,13 +1,13 @@
 # Portfolio
 
-Personal portfolio website: a mostly static site with a few interactive components, built with [Astro](https://astro.build) and hosted on Cloudflare Pages.
+Personal portfolio website: a mostly static site with a few interactive components, built with [Astro](https://astro.build) and hosted on Cloudflare.
 
 ## Stack
 
 - Astro (static output, islands architecture)
 - Svelte for interactive islands
 - TypeScript, plain CSS with design tokens
-- Cloudflare Pages for hosting
+- Cloudflare for hosting
 
 ## Getting started
 
