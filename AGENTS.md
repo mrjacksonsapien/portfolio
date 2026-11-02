@@ -15,8 +15,9 @@ Static portfolio built with Astro (islands architecture), hosted on Cloudflare P
 
 ## Git workflow
 
-- Never commit or push directly to `main`. `main` is production: everything merged there is deployed automatically by Cloudflare Pages. Merge into `main` only through a pull request.
-- `develop` is the integration branch. Commits and merges can go straight into `develop`.
+- **Never commit, push, merge or force-push directly to `main`, under any circumstances.** `main` is production: everything merged there is deployed automatically by Cloudflare. The only way to change `main` is a pull request from `develop`, opened by the agent and merged by the user.
+- Always commit on `develop`. It is the integration branch: commits and merges go straight into it.
+- To ship: push `develop`, then open a PR `develop` -> `main` (`gh pr create --base main --head develop`). Never merge it yourself.
 - Feature branches are not required for now (single maintainer).
 
 ## Documentation rules

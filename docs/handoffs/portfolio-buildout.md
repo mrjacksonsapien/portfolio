@@ -4,28 +4,25 @@ Last updated: 2026-11-02
 
 ## Goal
 
-Turn the scaffold into the finished portfolio: real visuals and interactions, with content added by the user. Done when the placeholders are replaced, the hero visual and project islands exist, and the site is deployed from `main` on Cloudflare Pages.
+Finish the portfolio and deploy it from `main` on Cloudflare Pages. Done when the remaining items below are closed and the site is live.
 
 ## State
 
-- Scaffold is committed and pushed on `develop` (commit `94af03f`). `main` is untouched (it has no commits of its own from this work).
-- `npm run check` reports 0 errors and `npm run build` generates 5 pages. The result has only been verified through build output and an HTTP 200 on the dev server, not by looking at it in a browser.
+- All three projects (SGL, Aquamania, Maze game) exist on `develop` with their islands. Work is committed and pushed on `develop`. `main` is untouched.
+- Cloudflare Pages is not linked yet. `docs/deployment.md` describes the planned setup only. The user is checking Cloudflare Pages now.
 - The dev server may still be running in the background (`npx astro dev status`, `npx astro dev stop`).
-- Cloudflare Pages is not linked yet. `docs/deployment.md` describes the planned setup only.
 
 ## Next steps
 
-- [ ] Ask the user for feedback on the visual result in the browser, then adjust the layout and styling.
-- [x] Hero visual: `src/islands/Starfield.svelte` is now a real starfield (drift, twinkle, pointer parallax, pauses off screen, static under reduced motion), hydrated with `client:idle`. Not yet checked in a browser.
-- [ ] Design and implement the interactive islands on project pages (`src/pages/projects/[slug].astro`). Discuss with the user what each project needs first.
-- [x] Site content (name, headline, intro, about, social links) is set in `src/data/site.ts`. The navbar has GitHub and LinkedIn icons.
-- [ ] Project 1 (SGL) is on `develop`: live demo island (`SglDemo`), illustrated story (`SglStage`, `sgl-stages.ts`) and pipeline background (`SglPipeline`); see `docs/architecture.md`. None of it has been checked by an agent in a browser, only by the user. The same approach (frontmatter `story`, one island per visual) can be reused for projects 2 and 3.
-- [ ] The user adds the real projects in `src/content/projects/`. Project 1 is done: `sgl.md` with the live `SglDemo` island (not yet checked in a browser; the text about learning linear algebra is generic and needs the user's real story). Project 2 (Aquamania) is on `develop` as `aquamania.md` with the `showcase` layout (see `docs/architecture.md`); not yet checked in a browser by an agent, and its text was expanded from the user's notes so it needs their review (year is set to 2026 as a guess). Project 3 (Maze game) is `maze-game.md` (showcase layout with the `circuit` background, three explainer animations and a click-to-load video); checked in headless Chromium at desktop and mobile widths, not by the user yet. Its text was written from the repo and the slides, so it needs their review (year set to 2025, credits paragraph, and the phone screenshot shows the demo code on the captive page: confirm it is fine to publish).
-- [x] Added `public/favicon.svg`, theme-color and basic Open Graph tags (`lang` was already set).
-- [ ] Still missing metadata: a social preview image (`og:image`, needs a design) and a sitemap (needs `site` in `astro.config.mjs`, so the final domain first).
-- [x] Mobile navigation: tap toggle added in `Navbar.astro`. Not yet tested on a real touch device. Known quirk: on desktop, closing by clicking the toggle while it keeps focus leaves the menu visible through `:focus-within`.
-- [x] `npm audit`: 3 low severity findings (deepmerge prototype poisoning via `@astrojs/svelte`, build-time only). The only offered fix downgrades `@astrojs/svelte` to 0.1.2 (breaking), so it was left alone. Re-check when a newer `@astrojs/svelte` is released.
 - [ ] Link the repository to Cloudflare Pages (build `npm run build`, output `dist`, Node 22) and document it fully in `docs/deployment.md`, including how agents and humans interact with the service. Merging `develop` into `main` goes through a pull request.
+- [ ] Add a sitemap: needs `site` in `astro.config.mjs`, so the final domain first.
+- [ ] Add a social preview image (`og:image`, needs a design).
+- [ ] The user reviews the project texts in `src/content/projects/`:
+  - `sgl.md`: the text about learning linear algebra is generic and needs the user's real story.
+  - `aquamania.md`: text was expanded from the user's notes; year (2026) is a guess.
+  - `maze-game.md`: text was written from the repo and slides; check the year (2025), the credits paragraph, and whether the phone screenshot showing demo code on the captive page is fine to publish.
+- [ ] Test the mobile navigation on a real touch device. Known quirk: on desktop, closing the menu by clicking the toggle while it keeps focus leaves it visible through `:focus-within`.
+- [ ] Re-check `npm audit` when a newer `@astrojs/svelte` is released (3 low findings, build-time only; the only offered fix is a breaking downgrade).
 
 ## Decisions and constraints
 
@@ -38,7 +35,7 @@ Turn the scaffold into the finished portfolio: real visuals and interactions, wi
 
 ## Open questions
 
-- The user will request interactive elements for Aquamania later. Projects 1, 2 and 3 all exist now.
+- Which final domain will the site use?
 
 ## Pointers
 
