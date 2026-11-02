@@ -2,7 +2,7 @@
   // Decorative background for the Maze game page: the project's circuit drawn as white lines on black. An ESP32 sends
   // data, clock and latch to two 74HC595 shift registers, which drive the rows and columns of an 8x8 LED matrix that
   // shows the game. Electricity flows along the traces as short pulses; the matrix is scanned one column at a time.
-  // Fixed to the viewport, so its cost does not grow with the page. Pauses while the tab is hidden and draws one
+  // Fixed to the viewport, so its cost does not grow with the page. Its opacity follows the scroll position. Pauses while the tab is hidden and draws one
   // still frame under reduced motion.
   // To remove it: delete the <CircuitBackground> line (and its import) in ShowcaseProject.astro, then this file.
   import { onMount } from 'svelte';
@@ -23,6 +23,11 @@
   const PULSE = 0.5; // opacity of a pulse of current
   const STEP_RATE = 11; // columns scanned per second (the real board does 1000, too fast to see)
   const PULSE_SPEED = 260; // world units per second
+  // The canvas is bright over the banner photo and fades as the page scrolls into the text.
+  const OPACITY_TOP = 0.45;
+  const OPACITY_READING = 0.3;
+  const GAIN_TOP = 1; // lines are this much brighter over the banner
+  const FADE_DISTANCE = 0.7; // in viewport heights of scrolling
 
   const ESP = { x: 80, y: 300, w: 180, h: 300 };
   const IC_A = { x: 520, y: 220, w: 90, h: 220 }; // drives the rows
@@ -82,6 +87,7 @@
     let height = 0;
     let raf = 0;
     let t0 = 0;
+    let gain = 1; // brightens every line at the top of the page, see updateOpacity
 
     /** Strokes the part of a trace between two distances along it. */
     function path(g: CanvasRenderingContext2D, tr: Trace, from = 0, to = tr.total) {
@@ -110,7 +116,7 @@
       const a = Math.max(at - size, 0);
       const b = Math.min(at, tr.total);
       if (b <= a) return;
-      g.globalAlpha = alpha;
+      g.globalAlpha = Math.min(1, (alpha) * gain);
       g.lineWidth = 2;
       path(g, tr, a, b);
       g.lineWidth = 1;
@@ -123,7 +129,7 @@
     }
 
     function box(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, alpha: number) {
-      g.globalAlpha = alpha;
+      g.globalAlpha = Math.min(1, (alpha) * gain);
       g.strokeRect(x, y, w, h);
     }
 
@@ -131,7 +137,7 @@
       g.font = `${size}px ${font}`;
       g.textAlign = align;
       g.textBaseline = 'middle';
-      g.globalAlpha = alpha;
+      g.globalAlpha = Math.min(1, (alpha) * gain);
       g.fillText(s, x, y);
     }
 
@@ -170,7 +176,7 @@
       const rowBits = (c: number) => pic.map((r) => r[c] === '#');
 
       // Power rails: a quiet line with a slow flow of 5V along it.
-      g.globalAlpha = BASE * 0.8;
+      g.globalAlpha = Math.min(1, (BASE * 0.8) * gain);
       for (const rail of [powerTrace, groundTrace]) path(g, rail);
       text(g, '5V', 40, 120, 11, 0.3, 'center');
       text(g, 'GND', 36, 860, 11, 0.3, 'center');
@@ -178,7 +184,7 @@
 
       // ESP32.
       box(g, ESP.x, ESP.y, ESP.w, ESP.h, 0.3);
-      g.globalAlpha = 0.18;
+      g.globalAlpha = Math.min(1, (0.18) * gain);
       g.strokeRect(ESP.x + 20, ESP.y - 40, ESP.w - 40, 40);
       g.beginPath();
       for (let k = 0; k < 5; k++) {
@@ -196,13 +202,13 @@
       // 74HC595 shift registers: DIP outlines with pins.
       for (const [ic, name] of [[IC_A, '74HC595 / rows'], [IC_B, '74HC595 / columns']] as const) {
         box(g, ic.x, ic.y, ic.w, ic.h, 0.3);
-        g.globalAlpha = 0.3;
+        g.globalAlpha = Math.min(1, (0.3) * gain);
         g.beginPath();
         g.arc(ic.x + ic.w / 2, ic.y, 7, 0, Math.PI);
         g.stroke();
         for (let k = 0; k < 8; k++) {
           for (const px of [ic.x - 8, ic.x + ic.w]) {
-            g.globalAlpha = 0.25;
+            g.globalAlpha = Math.min(1, (0.25) * gain);
             g.strokeRect(px, ic.y + 22 + k * 22, 8, 6);
           }
         }
@@ -210,7 +216,7 @@
       }
 
       // Quiet traces.
-      g.globalAlpha = BASE;
+      g.globalAlpha = Math.min(1, (BASE) * gain);
       for (const tr of [dataTrace, ...clockTraces, ...latchTraces, serialTrace, ...joyTraces, ...rowTraces, ...colTraces]) path(g, tr);
 
       // Signals: data and clock stream continuously; the latch fires once per scan step.
@@ -232,12 +238,12 @@
 
       // Joystick: a stick on a base; its three lines carry a pulse whenever the player moves.
       box(g, JOYSTICK.x - 60, JOYSTICK.y - 50, 120, 100, 0.25);
-      g.globalAlpha = 0.3;
+      g.globalAlpha = Math.min(1, (0.3) * gain);
       g.beginPath();
       g.arc(JOYSTICK.x, JOYSTICK.y, 24, 0, Math.PI * 2);
       g.stroke();
       const wobble = Math.sin(time * 1.3) * 5;
-      g.globalAlpha = 0.45;
+      g.globalAlpha = Math.min(1, (0.45) * gain);
       g.beginPath();
       g.arc(JOYSTICK.x + wobble, JOYSTICK.y + Math.cos(time * 1.3) * 4, 12, 0, Math.PI * 2);
       g.stroke();
@@ -254,7 +260,7 @@
       // The 8x8 LED matrix: a faint grid of the row and column lines, the LEDs, and the column being scanned.
       const { x: mx, y: my, pitch } = MATRIX;
       box(g, mx - 6, my - 6, pitch * 8 + 12, pitch * 8 + 12, 0.3);
-      g.globalAlpha = 0.07;
+      g.globalAlpha = Math.min(1, (0.07) * gain);
       g.beginPath();
       for (let k = 0; k < 8; k++) {
         const o = pitch * (k + 0.5);
@@ -273,25 +279,25 @@
           const cx = mx + pitch * (c + 0.5);
           const cy = my + pitch * (r + 0.5);
           if (bits[r]) {
-            g.globalAlpha = 0.12 + 0.75 * glow;
+            g.globalAlpha = Math.min(1, (0.12 + 0.75 * glow) * gain);
             g.beginPath();
             g.arc(cx, cy, 10, 0, Math.PI * 2);
             g.fill();
             if (c === col) {
-              g.globalAlpha = 0.35;
+              g.globalAlpha = Math.min(1, (0.35) * gain);
               g.beginPath();
               g.arc(cx, cy, 17, 0, Math.PI * 2);
               g.stroke();
             }
           } else {
-            g.globalAlpha = 0.1;
+            g.globalAlpha = Math.min(1, (0.1) * gain);
             g.beginPath();
             g.arc(cx, cy, 9, 0, Math.PI * 2);
             g.stroke();
           }
         }
       }
-      g.globalAlpha = 0.3;
+      g.globalAlpha = Math.min(1, (0.3) * gain);
       g.strokeRect(mx + pitch * col + 3, my - 3, pitch - 6, pitch * 8 + 6);
       text(g, '8x8 LED matrix', mx + pitch * 4, my - 26, 11, 0.3, 'center');
       g.globalAlpha = 1;
@@ -304,6 +310,13 @@
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       draw(reducedMotion.matches ? 3.1 : (performance.now() - t0) / 1000);
+    }
+
+    function updateOpacity() {
+      const k = Math.min(Math.max(window.scrollY / (window.innerHeight * FADE_DISTANCE), 0), 1);
+      const eased = k * k * (3 - 2 * k);
+      canvas.style.opacity = String(OPACITY_TOP + (OPACITY_READING - OPACITY_TOP) * eased);
+      gain = 1 + (GAIN_TOP - 1) * (1 - eased);
     }
 
     function frame(now: number) {
@@ -331,15 +344,18 @@
     const onVisibility = () => (document.hidden ? stop() : start());
 
     t0 = performance.now();
+    updateOpacity();
     resize();
     start();
     window.addEventListener('resize', resize);
+    window.addEventListener('scroll', updateOpacity, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
     reducedMotion.addEventListener('change', onMotionChange);
 
     return () => {
       stop();
       window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', updateOpacity);
       document.removeEventListener('visibilitychange', onVisibility);
       reducedMotion.removeEventListener('change', onMotionChange);
     };
@@ -356,7 +372,6 @@
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.45; /* keeps the text above it readable */
     animation: circuit-in 2s ease-out both;
   }
   @keyframes circuit-in {
