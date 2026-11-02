@@ -66,6 +66,13 @@ const backdrop = demo === 'sgl' ? 'sgl' : layout === 'showcase' ? (background ==
     inset: 0;
     z-index: -1;
     pointer-events: none;
+    /* Barely visible until the card is hovered or focused. */
+    opacity: 0.35;
+    transition: opacity 0.3s;
+  }
+  .card:hover .card__bg,
+  .card:focus-within .card__bg {
+    opacity: 1;
   }
   .card__link {
     color: inherit;

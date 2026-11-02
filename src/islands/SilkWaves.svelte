@@ -1,6 +1,8 @@
 <script lang="ts">
   // Hero visual: soft translucent ribbons flowing across the hero, inspired by the PS3 boot screen.
   // Filled ribbons with a faint wireframe mesh drawn over them. To remove it: delete the <SilkWaves> line (and its import) in Hero.astro, then this file.
+  // Hovering an element with data-wave-focus="fill" (the word "Art" in the headline) keeps only the filled ribbons;
+  // data-wave-focus="mesh" ("Systems") keeps only the wireframe, which is then drawn brighter.
   // Pauses while off screen or the tab is hidden; renders one static frame under reduced motion.
   import { onMount } from 'svelte';
 
@@ -27,6 +29,10 @@
   const MESH_ALPHA = 0.9; // mesh opacity as a multiple of the ribbon's fill opacity
   const BASE_Y = 0.55; // ribbon centre line, fraction of the height
 
+  const MESH_FOCUS_GAIN = 2.4; // wireframe brightness when it is the only layer shown
+  const FILL_FOCUS_GAIN = 1.5; // ribbon brightness when they are the only layer shown
+  const BLEND_RATE = 6; // how fast the layers cross-fade, per second
+
   let canvas: HTMLCanvasElement;
 
   onMount(() => {
@@ -42,6 +48,12 @@
     let raf = 0;
     let visible = true;
     let fade: CanvasGradient;
+    // Current and target brightness multipliers of the two layers.
+    let fillK = 1;
+    let meshK = 1;
+    let fillTarget = 1;
+    let meshTarget = 1;
+    let lastTime = 0;
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
@@ -62,6 +74,10 @@
 
     function draw(time: number) {
       const t = time / 1000;
+      const k = Math.min(1, Math.max(0, (time - lastTime) / 1000) * BLEND_RATE);
+      lastTime = time;
+      fillK += (fillTarget - fillK) * k;
+      meshK += (meshTarget - meshK) * k;
       ctx!.clearRect(0, 0, width, height);
       ctx!.globalCompositeOperation = 'lighter';
       ctx!.fillStyle = color;
@@ -91,11 +107,11 @@
         for (let i = 0; i <= n; i++) ctx!.lineTo(i * STEP, top[i]);
         for (let i = n; i >= 0; i--) ctx!.lineTo(i * STEP, bottom[i]);
         ctx!.closePath();
-        ctx!.globalAlpha = r.alpha;
-        ctx!.fill();
+        ctx!.globalAlpha = Math.min(1, r.alpha * fillK);
+        if (fillK > 0.005) ctx!.fill();
 
         // Wireframe overlay: strands along the ribbon plus cross ribs.
-        ctx!.globalAlpha = Math.min(r.alpha * MESH_ALPHA, 0.2);
+        ctx!.globalAlpha = Math.min(Math.min(r.alpha * MESH_ALPHA, 0.2) * meshK, 0.5);
         ctx!.beginPath();
         for (let k = 0; k < STRANDS; k++) {
           const v = k / (STRANDS - 1);
@@ -109,7 +125,7 @@
           ctx!.moveTo(i * STEP, top[i]);
           ctx!.lineTo(i * STEP, bottom[i]);
         }
-        ctx!.stroke();
+        if (meshK > 0.005) ctx!.stroke();
       }
 
       // Fade the ribbon ends.
@@ -134,6 +150,35 @@
       cancelAnimationFrame(raf);
       raf = 0;
     }
+
+    // Under reduced motion nothing animates, so a short loop plays the cross-fade and stops once it settles.
+    let settling = 0;
+    function settle(time: number) {
+      draw(time);
+      const done = Math.abs(fillK - fillTarget) < 0.01 && Math.abs(meshK - meshTarget) < 0.01;
+      settling = done ? 0 : requestAnimationFrame(settle);
+    }
+
+    function focusOn(mode: string | null) {
+      fillTarget = mode === 'fill' ? FILL_FOCUS_GAIN : mode === 'mesh' ? 0 : 1;
+      meshTarget = mode === 'mesh' ? MESH_FOCUS_GAIN : mode === 'fill' ? 0 : 1;
+      if (reducedMotion.matches && !settling) {
+        lastTime = performance.now();
+        settling = requestAnimationFrame(settle);
+      }
+    }
+
+    const focusables = Array.from(document.querySelectorAll<HTMLElement>('[data-wave-focus]'));
+    const focusHandlers = focusables.map((el) => {
+      const enter = () => focusOn(el.dataset.waveFocus ?? null);
+      const leave = () => focusOn(null);
+      el.addEventListener('pointerenter', enter);
+      el.addEventListener('pointerleave', leave);
+      return () => {
+        el.removeEventListener('pointerenter', enter);
+        el.removeEventListener('pointerleave', leave);
+      };
+    });
 
     function onMotionChange() {
       if (reducedMotion.matches) {
@@ -160,6 +205,8 @@
 
     return () => {
       stop();
+      cancelAnimationFrame(settling);
+      focusHandlers.forEach((off) => off());
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);

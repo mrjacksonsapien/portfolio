@@ -2,6 +2,12 @@
 import Starfield from '../islands/Starfield.svelte';
 import SilkWaves from '../islands/SilkWaves.svelte';
 import { site } from '../data/site';
+
+// "Art" and "Systems" (first and last word) react to hover: see SilkWaves.svelte and the styles below.
+const words = site.headline.main.split(' ');
+const first = words[0];
+const last = words.length > 1 ? words[words.length - 1] : undefined;
+const middle = words.slice(1, -1).join(' ');
 ---
 
 <section class="hero">
@@ -9,7 +15,7 @@ import { site } from '../data/site';
   <SilkWaves client:idle />
   <div class="container hero__inner">
     <h1 class="display">
-      <span class="accent type" style={`--n:${site.headline.lead.length}`}>{site.headline.lead}</span><br /><span class="wipe" style="--d:0.9s">{site.headline.main}</span>
+      <span class="part accent type" style={`--n:${site.headline.lead.length}`}>{site.headline.lead}</span><br /><span class="wipe" style="--d:0.9s"><span class="part word" data-wave-focus="fill">{first}</span>{middle && <span class="part">{' '}{middle}{' '}</span>}{last && <span class="part word" data-wave-focus="mesh">{last}</span>}</span>
     </h1>
     <p class="hero__intro meta rise" style="--d:1.6s">{site.intro}</p>
   </div>
@@ -30,6 +36,19 @@ import { site } from '../data/site';
     align-items: flex-end;
     gap: var(--space-4);
     flex-wrap: wrap;
+  }
+  /* While one of the two words is hovered, every other part of the headline sinks into the dark. */
+  .part {
+    transition:
+      opacity 0.3s,
+      filter 0.3s;
+  }
+  .word {
+    cursor: default;
+  }
+  h1:has(.word:hover) .part:not(:hover) {
+    opacity: 0.2;
+    filter: brightness(0.5);
   }
   .accent {
     font-size: 0.4em;
