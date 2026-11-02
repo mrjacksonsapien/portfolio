@@ -7,7 +7,7 @@ Hosted on **Cloudflare Workers with static assets** (the current "Create app" fl
 - Cloudflare watches the repository. A push or merge to the production branch `main` triggers a build, then a deploy.
 - Build command: `npm run build` (output in `dist/`)
 - Deploy command: `npx wrangler deploy`
-- Preview command: `npx wrangler preview` (used for non-production branch builds, if enabled)
+- Preview command: `npx wrangler preview` (used for non-production branch builds, e.g. `develop`). It requires the `previews` block in `wrangler.jsonc`, even if empty; without it those builds fail.
 - Node version: 22, read from `.nvmrc`.
 - No adapter is needed because the output is fully static. [wrangler.jsonc](../wrangler.jsonc) tells Wrangler to serve `dist/` as static assets. Its `name` must match the Worker name in the dashboard (`portfolio`).
 - No build variables or bindings are configured.
