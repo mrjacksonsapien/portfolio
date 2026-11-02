@@ -4,18 +4,17 @@ Last updated: 2026-11-02
 
 ## Goal
 
-Finish the portfolio and deploy it from `main` on Cloudflare Pages. Done when the remaining items below are closed and the site is live.
+Finish the portfolio and deploy it from `main` on Cloudflare. Done when the remaining items below are closed and the site is live.
 
 ## State
 
-- All three projects (SGL, Aquamania, Maze game) exist on `develop` with their islands. Work is committed and pushed on `develop`. `main` is untouched.
-- Cloudflare Pages is not linked yet. `docs/deployment.md` describes the planned setup only. The user is checking Cloudflare Pages now.
+- All three projects (SGL, Aquamania, Maze game) exist on `develop` with their islands. Work is committed and pushed on `develop`.
+- Deployed on Cloudflare (Worker `portfolio`, custom domain `martinsoltan.com`). How it works: `docs/deployment.md`.
 - The dev server may still be running in the background (`npx astro dev status`, `npx astro dev stop`).
 
 ## Next steps
 
-- [ ] Link the repository to Cloudflare Pages (build `npm run build`, output `dist`, Node 22) and document it fully in `docs/deployment.md`, including how agents and humans interact with the service. Merging `develop` into `main` goes through a pull request.
-- [ ] Add a sitemap: needs `site` in `astro.config.mjs`, so the final domain first.
+- [ ] Add a sitemap: set `site: 'https://martinsoltan.com'` in `astro.config.mjs` and add the sitemap integration.
 - [ ] Add a social preview image (`og:image`, needs a design).
 - [ ] The user reviews the project texts in `src/content/projects/`:
   - `sgl.md`: the text about learning linear algebra is generic and needs the user's real story.

@@ -4,7 +4,7 @@ Instructions for agents working on this portfolio. This file holds agent instruc
 
 ## Project in one line
 
-Static portfolio built with Astro (islands architecture), hosted on Cloudflare Pages. Interactive parts are Svelte islands that hydrate only when needed.
+Static portfolio built with Astro (islands architecture), hosted on Cloudflare. Interactive parts are Svelte islands that hydrate only when needed.
 
 ## Commands
 
