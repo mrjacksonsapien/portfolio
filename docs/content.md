@@ -51,6 +51,8 @@ The home grid, the navbar dropdown and the project page all read this collection
 
 Shared site content (name, description, headline, intro, about text, social links) lives in `src/data/site.ts`. The navbar, hero, footer, about page and layout read from it. Social links appear in both the navbar (icons) and the footer.
 
+The resume is two PDFs without the phone number, `public/files/Martin_Soltan_CV_en.pdf` and `Martin_Soltan_CV_fr.pdf`, linked from `site.links.resume.en` / `.fr`. The navbar icon opens a dropdown to choose the language; the footer links both. To update one, replace the file keeping its name.
+
 ## Media
 
 Originals live in `media-src/<project>/`; the site serves resized WebP from `public/images/<project>/`, referenced by absolute path. Folders and the conversion command: `media.md`.

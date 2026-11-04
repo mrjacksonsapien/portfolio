@@ -13,5 +13,9 @@ export const site = {
     github: 'https://github.com/mrjacksonsapien',
     linkedin: 'https://www.linkedin.com/in/martin-soltan-02297b264/',
     email: 'mailto:mrtnsoltan@gmail.com',
+    resume: {
+      en: '/files/Martin_Soltan_CV_en.pdf',
+      fr: '/files/Martin_Soltan_CV_fr.pdf',
+    },
   },
 } as const;
