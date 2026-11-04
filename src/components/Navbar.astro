@@ -44,6 +44,15 @@ const inProjects = currentPath.startsWith('/projects');
           <a href={site.links.linkedin} aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
           </a>
+          <div class="dropdown" data-dropdown>
+            <button type="button" class="dropdown__toggle" aria-label="Resume (PDF)" title="Resume (PDF)" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>
+            </button>
+            <ul class="dropdown__menu">
+              <li><a href={site.links.resume.en} lang="en" target="_blank" rel="noopener noreferrer">Resume (English)</a></li>
+              <li><a href={site.links.resume.fr} lang="fr" target="_blank" rel="noopener noreferrer">CV (Français)</a></li>
+            </ul>
+          </div>
         </li>
       </ul>
     </nav>
@@ -51,22 +60,28 @@ const inProjects = currentPath.startsWith('/projects');
 </header>
 
 <script>
-  // Touch support: tapping the toggle opens the menu (iOS Safari does not focus buttons on tap).
+  // Touch support: tapping a toggle opens its menu (iOS Safari does not focus buttons on tap).
   // Hover and focus-within in the CSS keep working for mouse and keyboard.
-  const dropdown = document.querySelector<HTMLElement>('[data-dropdown]');
-  const toggle = dropdown?.querySelector<HTMLButtonElement>('.dropdown__toggle');
+  const dropdowns = document.querySelectorAll<HTMLElement>('[data-dropdown]');
 
-  function setOpen(open: boolean) {
-    dropdown?.toggleAttribute('data-open', open);
-    toggle?.setAttribute('aria-expanded', String(open));
+  function setOpen(dropdown: HTMLElement, open: boolean) {
+    dropdown.toggleAttribute('data-open', open);
+    dropdown.querySelector('.dropdown__toggle')?.setAttribute('aria-expanded', String(open));
   }
 
-  toggle?.addEventListener('click', () => setOpen(!dropdown?.hasAttribute('data-open')));
+  dropdowns.forEach((dropdown) => {
+    dropdown.querySelector('.dropdown__toggle')?.addEventListener('click', () => {
+      const open = !dropdown.hasAttribute('data-open');
+      dropdowns.forEach((d) => setOpen(d, d === dropdown && open));
+    });
+  });
   document.addEventListener('click', (event) => {
-    if (!dropdown?.contains(event.target as Node)) setOpen(false);
+    dropdowns.forEach((d) => {
+      if (!d.contains(event.target as Node)) setOpen(d, false);
+    });
   });
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setOpen(false);
+    if (event.key === 'Escape') dropdowns.forEach((d) => setOpen(d, false));
   });
 </script>
 
@@ -116,9 +131,15 @@ const inProjects = currentPath.startsWith('/projects');
   .navbar__icons {
     display: flex;
     gap: var(--space-2);
+    align-items: center;
   }
-  .navbar__icons a {
+  .navbar__icons a,
+  .navbar__icons .dropdown__toggle {
     display: inline-flex;
+  }
+  .navbar__icons .dropdown__menu {
+    min-width: 10rem;
+    white-space: nowrap;
   }
   .dropdown {
     position: relative;
